@@ -1,0 +1,37 @@
+此目錄下收錄之檔案為專案之參考資料，不屬於程式一部分。
+資料原始授權如下：
+	
+moe_chongbian.txt
+	重編國語辭典修訂本
+	https://language.moe.gov.tw/001/Upload/Files/site_content/M0001/respub/dict_reviseddict_download.html
+	(c) 教育部終身教育司　
+	創用CC 姓名標示─禁止改作 3.0 台灣
+	https://creativecommons.org/licenses/by-nd/3.0/tw/legalcode
+
+CNS2UNICODE.txt
+CNS_phonetic.txt
+	全字庫
+	https://data.gov.tw/dataset/5961
+	(c) 國家發展委員會
+	政府資料開放授權條款－第1版
+	https://data.gov.tw/license
+
+phone.cin.txt
+tsi.src.txt
+pinyin_map.txt
+	新酷音輸入法
+	https://github.com/chewing/libchewing/tree/master/data
+	(c) Chewing Core Team
+	LGPL-2.1
+	https://www.gnu.org/licenses/old-licenses/lgpl-2.1.html
+
+phonic_table_src.txt
+	國語一字多音審訂表(初稿)
+	教育部
+	公共領域 Public Domain
+
+phonic_chemical.txt
+	化學元素一覽表 / 化學名詞用字之讀音
+	http://terms.naer.edu.tw/download/
+	教育部國家教育研究院
+	公共領域 Public Domain

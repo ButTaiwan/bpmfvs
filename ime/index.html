@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="zh-hant-TW">
+<head>
+<meta charset="utf-8"></head>
+<style>
+@font-face { font-family: ZY; src: url('BpmfZihiKaiStd-Regular.ttf'); }
+p { font-family: ZY; font-size: 36px; line-height: 1.4; margin: 0 }
+.hide { display: none }
+
+body { background: #b0ebe4 }
+#body { position: relative; margin: 10px auto; padding: 10px 10px 130px 10px; background: #fff8f4 }
+
+.info { height: 44px; font-family: 微軟正黑體, sans-serif; font-size: 26px }
+.info span { font-size: 32px; font-family: ZY; margin-right: 5px }
+
+#main { width: 100%; padding: 0; margin: 0 0 5px 0 }
+#input { font-family: ZY; height: 100%; font-size: 32px; line-height: 1.5; background: #fff; width: 100%; padding: 0; vertical-align: bottom; }
+#editor { font-family: ZY; height: 100%; font-size: 32px; line-height: 1.5; background: #fff; overflow: auto; padding: 0; display: none; border: 1px solid #777 }
+
+#panel { box-sizing: border-box; width: 100%; height: 106px; padding: 10px; background: #b0ebe4; user-select: none }
+#panel .navi { float: left; font-size: 30px; line-height: 80px; color: #fff; cursor: pointer }
+#selector { float: left; width: 706px; font-family: ZY; font-size: 68px; line-height: 1.2; border-radius: 15px; }
+#selector span { background-color: #ddd; float: left; margin: 0 5px; border-radius: 15px; padding-left: 5px; cursor: pointer }
+#selector span:hover { background-color: #fff;}
+#panel #next { float: right }
+#panel .butt { float: right; font-family: 微軟正黑體, sans-serif; padding: 4px 8px; margin: 20px 2px 20px 10px; font-size: 30px; line-height: 1; background-color: #ff6; border-radius: 10px; cursor: pointer }
+#panel .butt:hover { background-color: #fc6}
+
+#editor span { }
+span.p { background: #f2fa98; cursor: pointer; border: 2px solid #fff }
+span.curr { border: 2px solid #439abf }
+span.auto { background: #f7b0c0; }
+span.ok { background: #98fade; }
+
+</style>
+<body>
+
+<div id="body">
+<div id="info1" class="info">請貼上要標註注音的文章，然後按下開始：</div>
+<div id="info2" class="info hide">
+	<span class="p">字</span>多音字　
+	<span class="p auto">字</span>已自動猜測讀音　
+	<span class="p ok">字</span>已選擇讀音
+</div>
+<div id="main">
+	<textarea id="input"></textarea>
+	<div id="editor">abs</div>
+</div>
+<div id="panel">
+	<div id="done" class="butt hide">完成</div>
+	<div id="start" class="butt">開始</div>
+
+	<div id="prev" class="navi hide">◄</div>
+	<div id="selector"></div>
+	<div id="next" class="navi hide">►</div>
+</div>
+</div>
+
+<!--span>和</span><span>和&#xfe01;</span><span>和&#xfe02;</span><span>和&#xfe03;</span><span>和&#xfe04;</span><span>和&#xfe05;</span-->
+
+</body>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script src="poyin_db.js" charset="utf-8"></script>
+<script src="ime.js" charset="utf-8"></script>
+</html>

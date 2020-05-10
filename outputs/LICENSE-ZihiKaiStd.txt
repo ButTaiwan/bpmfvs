@@ -1,0 +1,29 @@
+BpmfZihiKaiStd-Regular.ttf	字嗨注音標楷
+Copyright 2020 But Ko
+
+	https://github.com/ButTaiwan/bpmfvs
+
+Licensed under CC-by 4.0
+	https://creativecommons.org/licenses/by/4.0/deed.zh_TW
+	https://creativecommons.org/licenses/by/4.0/
+
+
+Bopomofo IVS Font Specification (注音IVS字型規格)
+	Copyright 2020 But Ko
+	Licensed under Apache License, Version 2.0.
+	https://github.com/ButTaiwan/bpmfvs
+
+
+BpmfZihiKaiStd-Regular contains ZihiKaiStd.ttf
+	Copyright 2020 But Ko
+	https://github.com/ButTaiwan/bpmfvs
+	Licensed under CC-by 4.0
+
+
+ZihiKaiStd contains 全字庫正楷體
+
+顯名聲明
+國家發展委員會 2018 CNS11643中文標準交換碼全字庫 Ver 103.1
+此開放資料依政府資料開放授權條款 (Open Government Data License) 進行公眾釋出，
+使用者於遵守本條款各項規定之前提下，得利用之。
+政府資料開放授權條款：https://data.gov.tw/license

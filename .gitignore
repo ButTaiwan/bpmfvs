@@ -1,0 +1,11 @@
+old/
+encoding/
+srcfonts/Gen*.ttf
+srcfonts/Source*.ttf
+srcfonts/jf*.ttf
+stdkai/
+releases/
+Bpmfh*
+tmp/*
+BopomofoSmall-Regular.ttf
+f_bpmfsrc.js
