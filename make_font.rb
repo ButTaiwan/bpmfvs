@@ -456,9 +456,6 @@ def make_font src_font, c_family, e_family, version, use_src_bpmf=false, offy=0
 	system("#{$ttx} -m tmp/otfbuild.ttf -o outputs/#{$psname}.ttf tmp/otfbuild_cmap.ttx")
 end
 
-#make_font('jf-openhuninn-1.1.ttf', 'ㄅ注音粉圓', 'Bpmf huninn', '1.000', true, 29)
-#make_font('SourceHanSansTW-Regular.ttf', 'ㄅ字嗨注音黑體', 'Bpmf Zihi Sans', '1.000')
-
 make_font('ZihiKaiStd.ttf', 'ㄅ字嗨注音標楷', 'Bpmf Zihi KaiStd', '1.000', true)
 make_font('GenRyuMinTW-B.ttf', 'ㄅ源流注音明體', 'Bpmf GenRyu Min', '1.000', true)
 make_font('GenRyuMinTW-EL.ttf', 'ㄅ源流注音明體', 'Bpmf GenRyu Min', '1.000', true)
