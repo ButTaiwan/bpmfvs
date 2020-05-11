@@ -2,7 +2,7 @@
 
 本規格提供有簡易網頁版[讀音選擇工具](https://buttaiwan.github.io/bpmfvs/)，輔助快速選擇讀音。
 
-注意：使用線上版本，需先安裝[字嗨注音標楷](https://github.com/ButTaiwan/bpmfvs/releases/download/v1.002/BpmfZihiKaiStd.zip)字型。或是您可以下載[離線版讀音選擇工具](https://github.com/ButTaiwan/bpmfvs/releases/download/v1.002/Bpmf_VSIME.zip)在自己的機器上使用。
+注意：使用線上版本，需先安裝[字嗨注音標楷](https://github.com/ButTaiwan/bpmfvs/releases/download/v1.003/BpmfZihiKaiStd.zip)字型。或是您可以下載[離線版讀音選擇工具](https://github.com/ButTaiwan/bpmfvs/releases/download/v1.003/Bpmf_VSIME.zip)在自己的機器上使用。
 
 本讀音選擇工具使用「IVS」方式作為選擇讀音的方式。
 
