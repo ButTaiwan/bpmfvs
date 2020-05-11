@@ -6,6 +6,9 @@ $otfccbuild = toolpath + '\otfcc\otfccbuild.exe'
 $ttx = toolpath + '\FDK\Tools\win\ttx'
 $bpmfsrc = 'f_bpmfgen.js'
 
+$font_vendor = 'But Ko'
+$font_url = 'https://github.com/ButTaiwan/bpmfvs'
+
 require 'json'
 require 'set'
 
@@ -389,9 +392,9 @@ def set_font_name fnt, src_name, c_family, e_family, version
 	$nmap = Hash.new { nil }
 	src_name.each { |ne| $nmap[ne['nameID']] = ne['nameString'] if ne['platformID'] == 3 }
 
-	weight = $nmap[17] || $nmap[2] || ''
-	license = $nmap[13] || ''
-	license_url = $nmap[14] || ''
+	weight = $nmap[17] || $nmap[2] || 'Regular'
+	license = $nmap[13] || nil
+	license_url = $nmap[14] || nil
 	$psname = e_family.gsub(/\s/, '') + '-' + weight
 	
 	identifier = (version+';'+$psname).gsub(/\s/, '')
@@ -402,17 +405,34 @@ def set_font_name fnt, src_name, c_family, e_family, version
 		{ 'platformID' => 3, 'encodingID' => 1, 'languageID' => 1028, 'nameID':  2, 'nameString': weight },
 		{ 'platformID' => 3, 'encodingID' => 1, 'languageID' => 1028, 'nameID':  4, 'nameString': c_family + ' ' + weight },
 		{ 'platformID' => 3, 'encodingID' => 1, 'languageID' => 1028, 'nameID': 16, 'nameString': c_family },
-		#{ 'platformID' => 3, 'encodingID' => 1, 'languageID' => 1333, 'nameID':  0, 'nameString': copyright },
-		{ 'platformID' => 3, 'encodingID' => 1, 'languageID' => 1333, 'nameID':  1, 'nameString': e_family + ' ' + weight },
-		{ 'platformID' => 3, 'encodingID' => 1, 'languageID' => 1333, 'nameID':  2, 'nameString': weight },
-		{ 'platformID' => 3, 'encodingID' => 1, 'languageID' => 1333, 'nameID':  3, 'nameString': identifier },
-		{ 'platformID' => 3, 'encodingID' => 1, 'languageID' => 1333, 'nameID':  4, 'nameString': e_family + ' ' + weight },
-		{ 'platformID' => 3, 'encodingID' => 1, 'languageID' => 1333, 'nameID':  5, 'nameString': 'Version ' + version },
-		{ 'platformID' => 3, 'encodingID' => 1, 'languageID' => 1333, 'nameID':  6, 'nameString': $psname },
-		{ 'platformID' => 3, 'encodingID' => 1, 'languageID' => 1333, 'nameID': 13, 'nameString': license },
-		{ 'platformID' => 3, 'encodingID' => 1, 'languageID' => 1333, 'nameID': 14, 'nameString': license_url },
-		{ 'platformID' => 3, 'encodingID' => 1, 'languageID' => 1333, 'nameID': 16, 'nameString': e_family }
+		{ 'platformID' => 3, 'encodingID' => 1, 'languageID' => 1028, 'nameID': 17, 'nameString': weight },
+
+		{ 'platformID' => 3, 'encodingID' => 1, 'languageID' => 1033, 'nameID':  1, 'nameString': e_family + ' ' + weight },
+		{ 'platformID' => 3, 'encodingID' => 1, 'languageID' => 1033, 'nameID':  2, 'nameString': weight },
+		{ 'platformID' => 3, 'encodingID' => 1, 'languageID' => 1033, 'nameID':  3, 'nameString': identifier },
+		{ 'platformID' => 3, 'encodingID' => 1, 'languageID' => 1033, 'nameID':  4, 'nameString': e_family + ' ' + weight },
+		{ 'platformID' => 3, 'encodingID' => 1, 'languageID' => 1033, 'nameID':  5, 'nameString': 'Version ' + version },
+		{ 'platformID' => 3, 'encodingID' => 1, 'languageID' => 1033, 'nameID':  6, 'nameString': $psname },
+		{ 'platformID' => 3, 'encodingID' => 1, 'languageID' => 1033, 'nameID':  8, 'nameString': $font_vendor },
+		{ 'platformID' => 3, 'encodingID' => 1, 'languageID' => 1033, 'nameID': 11, 'nameString': $font_url },
+		{ 'platformID' => 3, 'encodingID' => 1, 'languageID' => 1033, 'nameID': 16, 'nameString': e_family },
+		{ 'platformID' => 3, 'encodingID' => 1, 'languageID' => 1033, 'nameID': 17, 'nameString': weight },
+
+		{ 'platformID' => 1, 'encodingID' => 0, 'languageID' => 0, 'nameID':  1, 'nameString': e_family + ' ' + weight },
+		{ 'platformID' => 1, 'encodingID' => 0, 'languageID' => 0, 'nameID':  2, 'nameString': weight },
+		{ 'platformID' => 1, 'encodingID' => 0, 'languageID' => 0, 'nameID':  3, 'nameString': identifier },
+		{ 'platformID' => 1, 'encodingID' => 0, 'languageID' => 0, 'nameID':  4, 'nameString': e_family + ' ' + weight },
+		{ 'platformID' => 1, 'encodingID' => 0, 'languageID' => 0, 'nameID':  5, 'nameString': 'Version ' + version },
+		{ 'platformID' => 1, 'encodingID' => 0, 'languageID' => 0, 'nameID':  6, 'nameString': $psname },
+		{ 'platformID' => 1, 'encodingID' => 0, 'languageID' => 0, 'nameID':  8, 'nameString': $font_vendor },
+		{ 'platformID' => 1, 'encodingID' => 0, 'languageID' => 0, 'nameID': 11, 'nameString': $font_url },
+		{ 'platformID' => 1, 'encodingID' => 0, 'languageID' => 0, 'nameID': 16, 'nameString': e_family },
+		{ 'platformID' => 1, 'encodingID' => 0, 'languageID' => 0, 'nameID': 17, 'nameString': weight }
 	]
+
+	fnt['name'] << { 'platformID' => 3, 'encodingID' => 1, 'languageID' => 1033, 'nameID': 13, 'nameString': license } if license && license != ''
+	fnt['name'] << { 'platformID' => 3, 'encodingID' => 1, 'languageID' => 1033, 'nameID': 14, 'nameString': license_url } if license_url && license_url != ''
+
 end
 
 def make_font src_font, c_family, e_family, version, use_src_bpmf=false, offy=0
@@ -456,54 +476,54 @@ def make_font src_font, c_family, e_family, version, use_src_bpmf=false, offy=0
 	system("#{$ttx} -m tmp/otfbuild.ttf -o outputs/#{$psname}.ttf tmp/otfbuild_cmap.ttx")
 end
 
-make_font('ZihiKaiStd.ttf', 'ㄅ字嗨注音標楷', 'Bpmf Zihi KaiStd', '1.002', true)
-make_font('GenRyuMinTW-B.ttf', 'ㄅ源流注音明體', 'Bpmf GenRyu Min', '1.001', true)
-make_font('GenRyuMinTW-EL.ttf', 'ㄅ源流注音明體', 'Bpmf GenRyu Min', '1.001', true)
-make_font('GenRyuMinTW-H.ttf', 'ㄅ源流注音明體', 'Bpmf GenRyu Min', '1.001', true)
-make_font('GenRyuMinTW-L.ttf', 'ㄅ源流注音明體', 'Bpmf GenRyu Min', '1.001', true)
-make_font('GenRyuMinTW-M.ttf', 'ㄅ源流注音明體', 'Bpmf GenRyu Min', '1.001', true)
-make_font('GenRyuMinTW-R.ttf', 'ㄅ源流注音明體', 'Bpmf GenRyu Min', '1.001', true)
-make_font('GenRyuMinTW-SB.ttf', 'ㄅ源流注音明體', 'Bpmf GenRyu Min', '1.001', true)
-make_font('GenSekiGothicTW-B.ttf', 'ㄅ源石注音黑體', 'Bpmf GenSeki Gothic', '1.001', true)
-make_font('GenSekiGothicTW-H.ttf', 'ㄅ源石注音黑體', 'Bpmf GenSeki Gothic', '1.001', true)
-make_font('GenSekiGothicTW-L.ttf', 'ㄅ源石注音黑體', 'Bpmf GenSeki Gothic', '1.001', true)
-make_font('GenSekiGothicTW-M.ttf', 'ㄅ源石注音黑體', 'Bpmf GenSeki Gothic', '1.001', true)
-make_font('GenSekiGothicTW-R.ttf', 'ㄅ源石注音黑體', 'Bpmf GenSeki Gothic', '1.001', true)
-make_font('GenSenRoundedTW-B.ttf', 'ㄅ源泉注音圓體', 'Bpmf GenSen Rounded', '1.001', true)
-make_font('GenSenRoundedTW-EL.ttf', 'ㄅ源泉注音圓體', 'Bpmf GenSen Rounded', '1.001', true)
-make_font('GenSenRoundedTW-H.ttf', 'ㄅ源泉注音圓體', 'Bpmf GenSen Rounded', '1.001', true)
-make_font('GenSenRoundedTW-L.ttf', 'ㄅ源泉注音圓體', 'Bpmf GenSen Rounded', '1.001', true)
-make_font('GenSenRoundedTW-M.ttf', 'ㄅ源泉注音圓體', 'Bpmf GenSen Rounded', '1.001', true)
-make_font('GenSenRoundedTW-R.ttf', 'ㄅ源泉注音圓體', 'Bpmf GenSen Rounded', '1.001', true)
-make_font('GenWanMinTW-EL.ttf', 'ㄅ源雲注音明體', 'Bpmf GenWan Min', '1.001', true)
-make_font('GenWanMinTW-L.ttf', 'ㄅ源雲注音明體', 'Bpmf GenWan Min', '1.001', true)
-make_font('GenWanMinTW-M.ttf', 'ㄅ源雲注音明體', 'Bpmf GenWan Min', '1.001', true)
-make_font('GenWanMinTW-R.ttf', 'ㄅ源雲注音明體', 'Bpmf GenWan Min', '1.001', true)
-make_font('GenWanMinTW-SB.ttf', 'ㄅ源雲注音明體', 'Bpmf GenWan Min', '1.001', true)
-make_font('GenYoGothicTW-B.ttf', 'ㄅ源樣注音黑體', 'Bpmf GenYo Gothic', '1.001', true)
-make_font('GenYoGothicTW-EL.ttf', 'ㄅ源樣注音黑體', 'Bpmf GenYo Gothic', '1.001', true)
-make_font('GenYoGothicTW-H.ttf', 'ㄅ源樣注音黑體', 'Bpmf GenYo Gothic', '1.001', true)
-make_font('GenYoGothicTW-L.ttf', 'ㄅ源樣注音黑體', 'Bpmf GenYo Gothic', '1.001', true)
-make_font('GenYoGothicTW-M.ttf', 'ㄅ源樣注音黑體', 'Bpmf GenYo Gothic', '1.001', true)
-make_font('GenYoGothicTW-N.ttf', 'ㄅ源樣注音黑體', 'Bpmf GenYo Gothic', '1.001', true)
-make_font('GenYoGothicTW-R.ttf', 'ㄅ源樣注音黑體', 'Bpmf GenYo Gothic', '1.001', true)
-make_font('GenYoMinTW-B.ttf', 'ㄅ源樣注音明體', 'Bpmf GenYo Min', '1.001', true)
-make_font('GenYoMinTW-EL.ttf', 'ㄅ源樣注音明體', 'Bpmf GenYo Min', '1.001', true)
-make_font('GenYoMinTW-H.ttf', 'ㄅ源樣注音明體', 'Bpmf GenYo Min', '1.001', true)
-make_font('GenYoMinTW-L.ttf', 'ㄅ源樣注音明體', 'Bpmf GenYo Min', '1.001', true)
-make_font('GenYoMinTW-M.ttf', 'ㄅ源樣注音明體', 'Bpmf GenYo Min', '1.001', true)
-make_font('GenYoMinTW-R.ttf', 'ㄅ源樣注音明體', 'Bpmf GenYo Min', '1.001', true)
-make_font('GenYoMinTW-SB.ttf', 'ㄅ源樣注音明體', 'Bpmf GenYo Min', '1.001', true)
-make_font('SourceHanSansTW-Bold.ttf', 'ㄅ字嗨注音黑體', 'Bpmf Zihi Sans', '1.001', true)
-make_font('SourceHanSansTW-ExtraLight.ttf', 'ㄅ字嗨注音黑體', 'Bpmf Zihi Sans', '1.001', true)
-make_font('SourceHanSansTW-Heavy.ttf', 'ㄅ字嗨注音黑體', 'Bpmf Zihi Sans', '1.001', true)
-make_font('SourceHanSansTW-Light.ttf', 'ㄅ字嗨注音黑體', 'Bpmf Zihi Sans', '1.001', true)
-make_font('SourceHanSansTW-Medium.ttf', 'ㄅ字嗨注音黑體', 'Bpmf Zihi Sans', '1.001', true)
-make_font('SourceHanSansTW-Regular.ttf', 'ㄅ字嗨注音黑體', 'Bpmf Zihi Sans', '1.001', true)
-make_font('SourceHanSerifTW-Bold.ttf', 'ㄅ字嗨注音宋體', 'Bpmf Zihi Serif', '1.001')
-make_font('SourceHanSerifTW-ExtraLight.ttf', 'ㄅ字嗨注音宋體', 'Bpmf Zihi Serif', '1.001')
-make_font('SourceHanSerifTW-Heavy.ttf', 'ㄅ字嗨注音宋體', 'Bpmf Zihi Serif', '1.001')
-make_font('SourceHanSerifTW-Light.ttf', 'ㄅ字嗨注音宋體', 'Bpmf Zihi Serif', '1.001')
-make_font('SourceHanSerifTW-Medium.ttf', 'ㄅ字嗨注音宋體', 'Bpmf Zihi Serif', '1.001')
-make_font('SourceHanSerifTW-Regular.ttf', 'ㄅ字嗨注音宋體', 'Bpmf Zihi Serif', '1.001')
-make_font('SourceHanSerifTW-SemiBold.ttf', 'ㄅ字嗨注音宋體', 'Bpmf Zihi Serif', '1.001')
+make_font('ZihiKaiStd.ttf', 'ㄅ字嗨注音標楷', 'Bpmf Zihi KaiStd', '1.003', true)
+make_font('GenRyuMinTW-B.ttf', 'ㄅ源流注音明體', 'Bpmf GenRyu Min', '1.003', true)
+make_font('GenRyuMinTW-EL.ttf', 'ㄅ源流注音明體', 'Bpmf GenRyu Min', '1.003', true)
+make_font('GenRyuMinTW-H.ttf', 'ㄅ源流注音明體', 'Bpmf GenRyu Min', '1.003', true)
+make_font('GenRyuMinTW-L.ttf', 'ㄅ源流注音明體', 'Bpmf GenRyu Min', '1.003', true)
+make_font('GenRyuMinTW-M.ttf', 'ㄅ源流注音明體', 'Bpmf GenRyu Min', '1.003', true)
+make_font('GenRyuMinTW-R.ttf', 'ㄅ源流注音明體', 'Bpmf GenRyu Min', '1.003', true)
+make_font('GenRyuMinTW-SB.ttf', 'ㄅ源流注音明體', 'Bpmf GenRyu Min', '1.003', true)
+make_font('GenSekiGothicTW-B.ttf', 'ㄅ源石注音黑體', 'Bpmf GenSeki Gothic', '1.003', true)
+make_font('GenSekiGothicTW-H.ttf', 'ㄅ源石注音黑體', 'Bpmf GenSeki Gothic', '1.003', true)
+make_font('GenSekiGothicTW-L.ttf', 'ㄅ源石注音黑體', 'Bpmf GenSeki Gothic', '1.003', true)
+make_font('GenSekiGothicTW-M.ttf', 'ㄅ源石注音黑體', 'Bpmf GenSeki Gothic', '1.003', true)
+make_font('GenSekiGothicTW-R.ttf', 'ㄅ源石注音黑體', 'Bpmf GenSeki Gothic', '1.003', true)
+make_font('GenSenRoundedTW-B.ttf', 'ㄅ源泉注音圓體', 'Bpmf GenSen Rounded', '1.003', true)
+make_font('GenSenRoundedTW-EL.ttf', 'ㄅ源泉注音圓體', 'Bpmf GenSen Rounded', '1.003', true)
+make_font('GenSenRoundedTW-H.ttf', 'ㄅ源泉注音圓體', 'Bpmf GenSen Rounded', '1.003', true)
+make_font('GenSenRoundedTW-L.ttf', 'ㄅ源泉注音圓體', 'Bpmf GenSen Rounded', '1.003', true)
+make_font('GenSenRoundedTW-M.ttf', 'ㄅ源泉注音圓體', 'Bpmf GenSen Rounded', '1.003', true)
+make_font('GenSenRoundedTW-R.ttf', 'ㄅ源泉注音圓體', 'Bpmf GenSen Rounded', '1.003', true)
+make_font('GenWanMinTW-EL.ttf', 'ㄅ源雲注音明體', 'Bpmf GenWan Min', '1.003', true)
+make_font('GenWanMinTW-L.ttf', 'ㄅ源雲注音明體', 'Bpmf GenWan Min', '1.003', true)
+make_font('GenWanMinTW-M.ttf', 'ㄅ源雲注音明體', 'Bpmf GenWan Min', '1.003', true)
+make_font('GenWanMinTW-R.ttf', 'ㄅ源雲注音明體', 'Bpmf GenWan Min', '1.003', true)
+make_font('GenWanMinTW-SB.ttf', 'ㄅ源雲注音明體', 'Bpmf GenWan Min', '1.003', true)
+make_font('GenYoGothicTW-B.ttf', 'ㄅ源樣注音黑體', 'Bpmf GenYo Gothic', '1.003', true)
+make_font('GenYoGothicTW-EL.ttf', 'ㄅ源樣注音黑體', 'Bpmf GenYo Gothic', '1.003', true)
+make_font('GenYoGothicTW-H.ttf', 'ㄅ源樣注音黑體', 'Bpmf GenYo Gothic', '1.003', true)
+make_font('GenYoGothicTW-L.ttf', 'ㄅ源樣注音黑體', 'Bpmf GenYo Gothic', '1.003', true)
+make_font('GenYoGothicTW-M.ttf', 'ㄅ源樣注音黑體', 'Bpmf GenYo Gothic', '1.003', true)
+make_font('GenYoGothicTW-N.ttf', 'ㄅ源樣注音黑體', 'Bpmf GenYo Gothic', '1.003', true)
+make_font('GenYoGothicTW-R.ttf', 'ㄅ源樣注音黑體', 'Bpmf GenYo Gothic', '1.003', true)
+make_font('GenYoMinTW-B.ttf', 'ㄅ源樣注音明體', 'Bpmf GenYo Min', '1.003', true)
+make_font('GenYoMinTW-EL.ttf', 'ㄅ源樣注音明體', 'Bpmf GenYo Min', '1.003', true)
+make_font('GenYoMinTW-H.ttf', 'ㄅ源樣注音明體', 'Bpmf GenYo Min', '1.003', true)
+make_font('GenYoMinTW-L.ttf', 'ㄅ源樣注音明體', 'Bpmf GenYo Min', '1.003', true)
+make_font('GenYoMinTW-M.ttf', 'ㄅ源樣注音明體', 'Bpmf GenYo Min', '1.003', true)
+make_font('GenYoMinTW-R.ttf', 'ㄅ源樣注音明體', 'Bpmf GenYo Min', '1.003', true)
+make_font('GenYoMinTW-SB.ttf', 'ㄅ源樣注音明體', 'Bpmf GenYo Min', '1.003', true)
+make_font('SourceHanSansTW-Bold.ttf', 'ㄅ字嗨注音黑體', 'Bpmf Zihi Sans', '1.003', true)
+make_font('SourceHanSansTW-ExtraLight.ttf', 'ㄅ字嗨注音黑體', 'Bpmf Zihi Sans', '1.003', true)
+make_font('SourceHanSansTW-Heavy.ttf', 'ㄅ字嗨注音黑體', 'Bpmf Zihi Sans', '1.003', true)
+make_font('SourceHanSansTW-Light.ttf', 'ㄅ字嗨注音黑體', 'Bpmf Zihi Sans', '1.003', true)
+make_font('SourceHanSansTW-Medium.ttf', 'ㄅ字嗨注音黑體', 'Bpmf Zihi Sans', '1.003', true)
+make_font('SourceHanSansTW-Regular.ttf', 'ㄅ字嗨注音黑體', 'Bpmf Zihi Sans', '1.003', true)
+make_font('SourceHanSerifTW-Bold.ttf', 'ㄅ字嗨注音宋體', 'Bpmf Zihi Serif', '1.003')
+make_font('SourceHanSerifTW-ExtraLight.ttf', 'ㄅ字嗨注音宋體', 'Bpmf Zihi Serif', '1.003')
+make_font('SourceHanSerifTW-Heavy.ttf', 'ㄅ字嗨注音宋體', 'Bpmf Zihi Serif', '1.003')
+make_font('SourceHanSerifTW-Light.ttf', 'ㄅ字嗨注音宋體', 'Bpmf Zihi Serif', '1.003')
+make_font('SourceHanSerifTW-Medium.ttf', 'ㄅ字嗨注音宋體', 'Bpmf Zihi Serif', '1.003')
+make_font('SourceHanSerifTW-Regular.ttf', 'ㄅ字嗨注音宋體', 'Bpmf Zihi Serif', '1.003')
+make_font('SourceHanSerifTW-SemiBold.ttf', 'ㄅ字嗨注音宋體', 'Bpmf Zihi Serif', '1.003')

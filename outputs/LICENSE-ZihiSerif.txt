@@ -1,5 +1,5 @@
 BpmfZihiSerif-*.ttf	字嗨注音宋體
-Copyright 2020 But Ko
+Copyright 2020 But Ko, with Reserved Font Name '字嗨' and 'Zihi'.
 
 	https://github.com/ButTaiwan/bpmfvs
 
