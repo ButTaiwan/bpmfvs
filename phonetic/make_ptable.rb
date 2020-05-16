@@ -326,7 +326,7 @@ def make_tableZ
 
 		rs.split(/\t/).each { |t|
 			read[c][t] = 100000 if !read[c].has_key?(t)
-			ptype[t] = 'C' if !ptype.has_key?(t) || ptype[c] == '?'
+			ptype[t] = 'C' if !ptype.has_key?(t) || ptype[t] == '?'
 		}
 	}
 	f.close
@@ -344,7 +344,7 @@ def make_tableZ
 
 			rs.split(/\t/).each { |t| 
 				read[c][t] = 0 if !read[c].has_key?(t)
-				ptype[t] = 'B' if !ptype.has_key?(t) || ptype[c] == '?'
+				ptype[t] = 'B' if !ptype.has_key?(t) || ptype[t] == '?'
 			}
 			#tmp[3..-1].each { |t| ptype[t] = 'B' unless ptype.has_key?(t) }
 		end
@@ -363,7 +363,7 @@ def make_tableZ
 			src[c] = 'D'
 			rs.split(/\t/).each { |t| 
 				read[c][t] = 0 if !read[c].has_key?(t)
-				ptype[t] = 'D' unless ptype.has_key?(t) || ptype[c] == '?'
+				ptype[t] = 'D' if !ptype.has_key?(t) || ptype[t] == '?'
 			}
 		end
 	}
@@ -380,7 +380,7 @@ def make_tableZ
 			read[c] = {} unless read.has_key?(c)
 			rs.split(/\t/).each { |t| 
 				read[c][t] = 0 if !read[c].has_key?(t)
-				ptype[t] = 'E' unless ptype.has_key?(t) || ptype[c] == '?'
+				ptype[t] = 'E' if !ptype.has_key?(t) || ptype[t] == '?'
 			}
 		end
 	}

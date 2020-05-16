@@ -64,7 +64,7 @@ f.close
 f = File.open('poyin_db.txt', 'w:utf-8')
 f.puts "# 教育部「國語一字多音審訂表(初稿)」範圍"
 db.each { |c, v|
-	next if v['g'] != 'A'
+	next if v['g'] !~ /A/
 	
 	v['r'].each { |r, vs|
 		f.puts "[#{c}] #{r}\t" + vs.join('/') unless v['f']
@@ -75,7 +75,7 @@ db.each { |c, v|
 f.puts
 f.puts "# 國語一字多音審訂表未收錄範圍"
 db.each { |c, v|
-	next if v['g'] == 'A'
+	next if v['g'] =~ /A/
 	
 	v['r'].each { |r, vs|
 		f.puts "[#{c}] #{r}\t" + vs.join('/')
