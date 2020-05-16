@@ -14,9 +14,9 @@ require 'set'
 
 $pos = [
 	nil,
-	[200, 520],
-	[400, 50, 720],
-	[520, 230, -60, 810]
+	[200, 460],
+	[400, 50, 660],
+	[520, 230, -60, 780]
 ]
 
 $bpmfname = {
@@ -64,9 +64,9 @@ def create_bpmf_glypfs(fnt, use_src_bpmf)
 		zy = zy.gsub(/[ˊˇˋ˙]/, '')
 		len = zy.length
 		len.times { |i|
-			refs << {"glyph":"zy" + $bpmfname[zy[i]],"x":0,"y":$pos[len][i]}
+			refs << {"glyph":"zy" + $bpmfname[zy[i]],"x":0,"y":$pos[len][i] + (py[-1] == '5' ? -60 : 0)}
 		}
-		refs << {"glyph":"tone" + py[-1], "x":300,"y":$pos[len][-2]+(py[-1]=='2' ? 250 : 200) } if py[-1] =~ /[234]/
+		refs << {"glyph":"tone" + py[-1], "x":300,"y":$pos[len][-2]+(py[-1]=='2' ? 280 : 200) } if py[-1] =~ /[234]/
 		refs << {"glyph":"tone5", "x":0,"y":$pos[len][-1]} if py[-1] == '5'
 		
 		gly = {'advanceWidth': 512, 'advanceHeight': 1024, 'verticalOrigin': 900, 'references': refs }
@@ -476,54 +476,54 @@ def make_font src_font, c_family, e_family, version, use_src_bpmf=false, offy=0
 	system("#{$ttx} -m tmp/otfbuild.ttf -o outputs/#{$psname}.ttf tmp/otfbuild_cmap.ttx")
 end
 
-make_font('ZihiKaiStd.ttf', 'ㄅ字嗨注音標楷', 'Bpmf Zihi KaiStd', '1.003', true)
-make_font('GenRyuMinTW-B.ttf', 'ㄅ源流注音明體', 'Bpmf GenRyu Min', '1.003', true)
-make_font('GenRyuMinTW-EL.ttf', 'ㄅ源流注音明體', 'Bpmf GenRyu Min', '1.003', true)
-make_font('GenRyuMinTW-H.ttf', 'ㄅ源流注音明體', 'Bpmf GenRyu Min', '1.003', true)
-make_font('GenRyuMinTW-L.ttf', 'ㄅ源流注音明體', 'Bpmf GenRyu Min', '1.003', true)
-make_font('GenRyuMinTW-M.ttf', 'ㄅ源流注音明體', 'Bpmf GenRyu Min', '1.003', true)
-make_font('GenRyuMinTW-R.ttf', 'ㄅ源流注音明體', 'Bpmf GenRyu Min', '1.003', true)
-make_font('GenRyuMinTW-SB.ttf', 'ㄅ源流注音明體', 'Bpmf GenRyu Min', '1.003', true)
-make_font('GenSekiGothicTW-B.ttf', 'ㄅ源石注音黑體', 'Bpmf GenSeki Gothic', '1.003', true)
-make_font('GenSekiGothicTW-H.ttf', 'ㄅ源石注音黑體', 'Bpmf GenSeki Gothic', '1.003', true)
-make_font('GenSekiGothicTW-L.ttf', 'ㄅ源石注音黑體', 'Bpmf GenSeki Gothic', '1.003', true)
-make_font('GenSekiGothicTW-M.ttf', 'ㄅ源石注音黑體', 'Bpmf GenSeki Gothic', '1.003', true)
-make_font('GenSekiGothicTW-R.ttf', 'ㄅ源石注音黑體', 'Bpmf GenSeki Gothic', '1.003', true)
-make_font('GenSenRoundedTW-B.ttf', 'ㄅ源泉注音圓體', 'Bpmf GenSen Rounded', '1.003', true)
-make_font('GenSenRoundedTW-EL.ttf', 'ㄅ源泉注音圓體', 'Bpmf GenSen Rounded', '1.003', true)
-make_font('GenSenRoundedTW-H.ttf', 'ㄅ源泉注音圓體', 'Bpmf GenSen Rounded', '1.003', true)
-make_font('GenSenRoundedTW-L.ttf', 'ㄅ源泉注音圓體', 'Bpmf GenSen Rounded', '1.003', true)
-make_font('GenSenRoundedTW-M.ttf', 'ㄅ源泉注音圓體', 'Bpmf GenSen Rounded', '1.003', true)
-make_font('GenSenRoundedTW-R.ttf', 'ㄅ源泉注音圓體', 'Bpmf GenSen Rounded', '1.003', true)
-make_font('GenWanMinTW-EL.ttf', 'ㄅ源雲注音明體', 'Bpmf GenWan Min', '1.003', true)
-make_font('GenWanMinTW-L.ttf', 'ㄅ源雲注音明體', 'Bpmf GenWan Min', '1.003', true)
-make_font('GenWanMinTW-M.ttf', 'ㄅ源雲注音明體', 'Bpmf GenWan Min', '1.003', true)
-make_font('GenWanMinTW-R.ttf', 'ㄅ源雲注音明體', 'Bpmf GenWan Min', '1.003', true)
-make_font('GenWanMinTW-SB.ttf', 'ㄅ源雲注音明體', 'Bpmf GenWan Min', '1.003', true)
-make_font('GenYoGothicTW-B.ttf', 'ㄅ源樣注音黑體', 'Bpmf GenYo Gothic', '1.003', true)
-make_font('GenYoGothicTW-EL.ttf', 'ㄅ源樣注音黑體', 'Bpmf GenYo Gothic', '1.003', true)
-make_font('GenYoGothicTW-H.ttf', 'ㄅ源樣注音黑體', 'Bpmf GenYo Gothic', '1.003', true)
-make_font('GenYoGothicTW-L.ttf', 'ㄅ源樣注音黑體', 'Bpmf GenYo Gothic', '1.003', true)
-make_font('GenYoGothicTW-M.ttf', 'ㄅ源樣注音黑體', 'Bpmf GenYo Gothic', '1.003', true)
-make_font('GenYoGothicTW-N.ttf', 'ㄅ源樣注音黑體', 'Bpmf GenYo Gothic', '1.003', true)
-make_font('GenYoGothicTW-R.ttf', 'ㄅ源樣注音黑體', 'Bpmf GenYo Gothic', '1.003', true)
-make_font('GenYoMinTW-B.ttf', 'ㄅ源樣注音明體', 'Bpmf GenYo Min', '1.003', true)
-make_font('GenYoMinTW-EL.ttf', 'ㄅ源樣注音明體', 'Bpmf GenYo Min', '1.003', true)
-make_font('GenYoMinTW-H.ttf', 'ㄅ源樣注音明體', 'Bpmf GenYo Min', '1.003', true)
-make_font('GenYoMinTW-L.ttf', 'ㄅ源樣注音明體', 'Bpmf GenYo Min', '1.003', true)
-make_font('GenYoMinTW-M.ttf', 'ㄅ源樣注音明體', 'Bpmf GenYo Min', '1.003', true)
-make_font('GenYoMinTW-R.ttf', 'ㄅ源樣注音明體', 'Bpmf GenYo Min', '1.003', true)
-make_font('GenYoMinTW-SB.ttf', 'ㄅ源樣注音明體', 'Bpmf GenYo Min', '1.003', true)
-make_font('SourceHanSansTW-Bold.ttf', 'ㄅ字嗨注音黑體', 'Bpmf Zihi Sans', '1.003', true)
-make_font('SourceHanSansTW-ExtraLight.ttf', 'ㄅ字嗨注音黑體', 'Bpmf Zihi Sans', '1.003', true)
-make_font('SourceHanSansTW-Heavy.ttf', 'ㄅ字嗨注音黑體', 'Bpmf Zihi Sans', '1.003', true)
-make_font('SourceHanSansTW-Light.ttf', 'ㄅ字嗨注音黑體', 'Bpmf Zihi Sans', '1.003', true)
-make_font('SourceHanSansTW-Medium.ttf', 'ㄅ字嗨注音黑體', 'Bpmf Zihi Sans', '1.003', true)
-make_font('SourceHanSansTW-Regular.ttf', 'ㄅ字嗨注音黑體', 'Bpmf Zihi Sans', '1.003', true)
-make_font('SourceHanSerifTW-Bold.ttf', 'ㄅ字嗨注音宋體', 'Bpmf Zihi Serif', '1.003')
-make_font('SourceHanSerifTW-ExtraLight.ttf', 'ㄅ字嗨注音宋體', 'Bpmf Zihi Serif', '1.003')
-make_font('SourceHanSerifTW-Heavy.ttf', 'ㄅ字嗨注音宋體', 'Bpmf Zihi Serif', '1.003')
-make_font('SourceHanSerifTW-Light.ttf', 'ㄅ字嗨注音宋體', 'Bpmf Zihi Serif', '1.003')
-make_font('SourceHanSerifTW-Medium.ttf', 'ㄅ字嗨注音宋體', 'Bpmf Zihi Serif', '1.003')
-make_font('SourceHanSerifTW-Regular.ttf', 'ㄅ字嗨注音宋體', 'Bpmf Zihi Serif', '1.003')
-make_font('SourceHanSerifTW-SemiBold.ttf', 'ㄅ字嗨注音宋體', 'Bpmf Zihi Serif', '1.003')
+make_font('ZihiKaiStd.ttf', 'ㄅ字嗨注音標楷', 'Bpmf Zihi KaiStd', '1.100', true)
+make_font('GenRyuMinTW-B.ttf', 'ㄅ源流注音明體', 'Bpmf GenRyu Min', '1.100', true)
+make_font('GenRyuMinTW-EL.ttf', 'ㄅ源流注音明體', 'Bpmf GenRyu Min', '1.100', true)
+make_font('GenRyuMinTW-H.ttf', 'ㄅ源流注音明體', 'Bpmf GenRyu Min', '1.100', true)
+make_font('GenRyuMinTW-L.ttf', 'ㄅ源流注音明體', 'Bpmf GenRyu Min', '1.100', true)
+make_font('GenRyuMinTW-M.ttf', 'ㄅ源流注音明體', 'Bpmf GenRyu Min', '1.100', true)
+make_font('GenRyuMinTW-R.ttf', 'ㄅ源流注音明體', 'Bpmf GenRyu Min', '1.100', true)
+make_font('GenRyuMinTW-SB.ttf', 'ㄅ源流注音明體', 'Bpmf GenRyu Min', '1.100', true)
+make_font('GenSekiGothicTW-B.ttf', 'ㄅ源石注音黑體', 'Bpmf GenSeki Gothic', '1.100', true)
+make_font('GenSekiGothicTW-H.ttf', 'ㄅ源石注音黑體', 'Bpmf GenSeki Gothic', '1.100', true)
+make_font('GenSekiGothicTW-L.ttf', 'ㄅ源石注音黑體', 'Bpmf GenSeki Gothic', '1.100', true)
+make_font('GenSekiGothicTW-M.ttf', 'ㄅ源石注音黑體', 'Bpmf GenSeki Gothic', '1.100', true)
+make_font('GenSekiGothicTW-R.ttf', 'ㄅ源石注音黑體', 'Bpmf GenSeki Gothic', '1.100', true)
+make_font('GenSenRoundedTW-B.ttf', 'ㄅ源泉注音圓體', 'Bpmf GenSen Rounded', '1.100', true)
+make_font('GenSenRoundedTW-EL.ttf', 'ㄅ源泉注音圓體', 'Bpmf GenSen Rounded', '1.100', true)
+make_font('GenSenRoundedTW-H.ttf', 'ㄅ源泉注音圓體', 'Bpmf GenSen Rounded', '1.100', true)
+make_font('GenSenRoundedTW-L.ttf', 'ㄅ源泉注音圓體', 'Bpmf GenSen Rounded', '1.100', true)
+make_font('GenSenRoundedTW-M.ttf', 'ㄅ源泉注音圓體', 'Bpmf GenSen Rounded', '1.100', true)
+make_font('GenSenRoundedTW-R.ttf', 'ㄅ源泉注音圓體', 'Bpmf GenSen Rounded', '1.100', true)
+make_font('GenWanMinTW-EL.ttf', 'ㄅ源雲注音明體', 'Bpmf GenWan Min', '1.100', true)
+make_font('GenWanMinTW-L.ttf', 'ㄅ源雲注音明體', 'Bpmf GenWan Min', '1.100', true)
+make_font('GenWanMinTW-M.ttf', 'ㄅ源雲注音明體', 'Bpmf GenWan Min', '1.100', true)
+make_font('GenWanMinTW-R.ttf', 'ㄅ源雲注音明體', 'Bpmf GenWan Min', '1.100', true)
+make_font('GenWanMinTW-SB.ttf', 'ㄅ源雲注音明體', 'Bpmf GenWan Min', '1.100', true)
+make_font('GenYoGothicTW-B.ttf', 'ㄅ源樣注音黑體', 'Bpmf GenYo Gothic', '1.100', true)
+make_font('GenYoGothicTW-EL.ttf', 'ㄅ源樣注音黑體', 'Bpmf GenYo Gothic', '1.100', true)
+make_font('GenYoGothicTW-H.ttf', 'ㄅ源樣注音黑體', 'Bpmf GenYo Gothic', '1.100', true)
+make_font('GenYoGothicTW-L.ttf', 'ㄅ源樣注音黑體', 'Bpmf GenYo Gothic', '1.100', true)
+make_font('GenYoGothicTW-M.ttf', 'ㄅ源樣注音黑體', 'Bpmf GenYo Gothic', '1.100', true)
+make_font('GenYoGothicTW-N.ttf', 'ㄅ源樣注音黑體', 'Bpmf GenYo Gothic', '1.100', true)
+make_font('GenYoGothicTW-R.ttf', 'ㄅ源樣注音黑體', 'Bpmf GenYo Gothic', '1.100', true)
+make_font('GenYoMinTW-B.ttf', 'ㄅ源樣注音明體', 'Bpmf GenYo Min', '1.100', true)
+make_font('GenYoMinTW-EL.ttf', 'ㄅ源樣注音明體', 'Bpmf GenYo Min', '1.100', true)
+make_font('GenYoMinTW-H.ttf', 'ㄅ源樣注音明體', 'Bpmf GenYo Min', '1.100', true)
+make_font('GenYoMinTW-L.ttf', 'ㄅ源樣注音明體', 'Bpmf GenYo Min', '1.100', true)
+make_font('GenYoMinTW-M.ttf', 'ㄅ源樣注音明體', 'Bpmf GenYo Min', '1.100', true)
+make_font('GenYoMinTW-R.ttf', 'ㄅ源樣注音明體', 'Bpmf GenYo Min', '1.100', true)
+make_font('GenYoMinTW-SB.ttf', 'ㄅ源樣注音明體', 'Bpmf GenYo Min', '1.100', true)
+make_font('SourceHanSansTW-Bold.ttf', 'ㄅ字嗨注音黑體', 'Bpmf Zihi Sans', '1.100', true)
+make_font('SourceHanSansTW-ExtraLight.ttf', 'ㄅ字嗨注音黑體', 'Bpmf Zihi Sans', '1.100', true)
+make_font('SourceHanSansTW-Heavy.ttf', 'ㄅ字嗨注音黑體', 'Bpmf Zihi Sans', '1.100', true)
+make_font('SourceHanSansTW-Light.ttf', 'ㄅ字嗨注音黑體', 'Bpmf Zihi Sans', '1.100', true)
+make_font('SourceHanSansTW-Medium.ttf', 'ㄅ字嗨注音黑體', 'Bpmf Zihi Sans', '1.100', true)
+make_font('SourceHanSansTW-Regular.ttf', 'ㄅ字嗨注音黑體', 'Bpmf Zihi Sans', '1.100', true)
+make_font('SourceHanSerifTW-Bold.ttf', 'ㄅ字嗨注音宋體', 'Bpmf Zihi Serif', '1.100')
+make_font('SourceHanSerifTW-ExtraLight.ttf', 'ㄅ字嗨注音宋體', 'Bpmf Zihi Serif', '1.100')
+make_font('SourceHanSerifTW-Heavy.ttf', 'ㄅ字嗨注音宋體', 'Bpmf Zihi Serif', '1.100')
+make_font('SourceHanSerifTW-Light.ttf', 'ㄅ字嗨注音宋體', 'Bpmf Zihi Serif', '1.100')
+make_font('SourceHanSerifTW-Medium.ttf', 'ㄅ字嗨注音宋體', 'Bpmf Zihi Serif', '1.100')
+make_font('SourceHanSerifTW-Regular.ttf', 'ㄅ字嗨注音宋體', 'Bpmf Zihi Serif', '1.100')
+make_font('SourceHanSerifTW-SemiBold.ttf', 'ㄅ字嗨注音宋體', 'Bpmf Zihi Serif', '1.100')

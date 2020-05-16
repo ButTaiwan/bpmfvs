@@ -29,7 +29,8 @@ body { background: #b0ebe4 }
 #editor span { }
 span.p { background: #f2fa98; cursor: pointer; border: 2px solid #fff }
 span.curr { border: 2px solid #439abf }
-span.auto { background: #f7b0c0; }
+span.fuzzy { background: #f7b0c0; }
+span.auto { background: #f7cfb0; }
 span.ok { background: #98fade; }
 
 </style>
@@ -39,7 +40,8 @@ span.ok { background: #98fade; }
 <div id="info1" class="info">請貼上要標註注音的文章，然後按下開始：</div>
 <div id="info2" class="info hide">
 	<span class="p">字</span>多音字　
-	<span class="p auto">字</span>已自動猜測讀音　
+	<span class="p fuzzy">字</span>難猜測字　
+	<span class="p auto">字</span>已猜測讀音　
 	<span class="p ok">字</span>已選擇讀音
 </div>
 <div id="main">

@@ -1,3 +1,9 @@
+**注意**
+
+這裡是關於技術規格的介紹，一般使用者下載字型請至[這裡](https://github.com/ButTaiwan/bpmfvs/releases)，使用說明請至[這裡](./guide/)。
+
+若對於本專案所收錄的讀音有所疑慮，請參考[讀音收錄原則](./phonetic/)。
+
 # 注音IVS字型規格 Bopomofo IVS Font Specification
 
 本規格試圖制定一個新的注音字型規格，取代傳統以多個字型檔來選擇破音的注音字型方案。

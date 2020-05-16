@@ -99,7 +99,10 @@ function setEditorText(t) {
 			$('<span id="sp'+ i +'" data-i="'+ i +'"><br></span>').appendTo(editor);
 		} else {
 			var sp = $('<span id="sp'+ i +'" data-i="'+ i +'"></span>').text(c).appendTo(editor);
-			if (data[c.charAt(0)]) sp.addClass('p');
+			if (data[c.charAt(0)]) {
+				sp.addClass('p');
+				if (data[c.charAt(0)].f) sp.addClass('fuzzy');
+			}
 		}
 	}
 	editor.show();

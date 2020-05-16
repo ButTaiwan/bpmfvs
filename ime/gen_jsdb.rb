@@ -30,6 +30,12 @@ f.each { |s|
 	next if s[0] == '#'
 	
 	c, r, vs = s.gsub('、', '/').gsub(/[\[\]]/, '').split(/\s+/)
+
+	fuzzy = false
+	if c[-1] == '}'
+		c = c[0..-2]
+		fuzzy = true
+	end
 	
 	if !db.has_key?(c)
 		puts "Error: '#{c}' is not in source data."
@@ -40,6 +46,8 @@ f.each { |s|
 		puts "Error: '#{c}' has no reading '#{r}'."
 		next
 	end
+
+	db[c]['f'] = fuzzy
 
 	next if vs == nil || vs == ''
 	vs.split('/').each { |v|
@@ -59,7 +67,8 @@ db.each { |c, v|
 	next if v['g'] != 'A'
 	
 	v['r'].each { |r, vs|
-		f.puts "[#{c}] #{r}\t" + vs.join('/')
+		f.puts "[#{c}] #{r}\t" + vs.join('/') unless v['f']
+		f.puts "[#{c}} #{r}\t" + vs.join('/') if v['f']
 	}
 }
 
@@ -78,6 +87,7 @@ f.close
 jsdb = {}
 db.each { |k, v|
 	jsdb[k] = { 's' => v['r'].size }
+	jsdb[k]['f'] = true if v['f']
 	flag = false
 	vs = []
 	v['r'].values.each { |x|
