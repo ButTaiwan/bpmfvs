@@ -194,6 +194,7 @@ def read_font fnt, font_file, c_family, e_family, version, use_src_bpmf, offy
 		next if s[0] == '#'
 		
 		u, cfg = s.split(/\t/)
+		u.chomp!
 		$clist[u] = false
 		$ccfg[u] = ',' + (cfg || '') + ','
 	}
