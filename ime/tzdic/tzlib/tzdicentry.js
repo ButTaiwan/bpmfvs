@@ -56,12 +56,13 @@ $(document).ready(function () {
 					if(item.q){	
 						let qarray = null;
 						let yinarray = null;
+						let noivs = removeIVS(item.q);
 						// check is the dictionary data tzdata loaded
 						if(tzdic[dicSlot]){
 							// dictionary lookup
-							result = tzdic[dicSlot][item.q+posfix];
+							result = tzdic[dicSlot][noivs+posfix];
 							if(ivsdic){
-								qarray = item.q.split("");
+								qarray = noivs.split("");
 								if(result && result.z){
 									yinarray = result.z.split(new RegExp(separators.join('|'), 'g'));
 								}
@@ -103,6 +104,25 @@ $(document).ready(function () {
 
 function getIVS(c, j){
 	return c + (j > 0 ? chr(vsbase + j*1) : '');
+}
+
+function removeIVS(q){
+	let noivs = "";
+	if(q){
+		let qarr = q.split("");
+		let prevIsVbase = false;
+		for(iq=0;iq<qarr.length;iq++){
+			if(qarr[iq] == "\udb40"){
+				prevIsVbase = true;
+				continue;
+			} 
+			if(!prevIsVbase){
+				noivs += qarr[iq];
+			}
+			prevIsVbase = false;
+		}
+	}
+	return noivs;
 }
 
 function chr(uni) {

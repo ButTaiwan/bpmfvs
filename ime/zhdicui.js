@@ -54,31 +54,68 @@ function ZiHaiDicUI(){
 	function fnGetPhrases(param){
 		let {event,srcObj} = param;
 		let phrases = null;
+		let selectedString = null;
 		isIframeReady = false;
 		if(!srcObj && event && event.target){
-			srcObj = $(event.target);						
+			srcObj = $(event.target);	
+			if (window.getSelection) {
+				selectedString = window.getSelection().toString();
+			}					
 		}	
-		if(srcObj){
+		if(srcObj && !selectedString){
 			let currDataI = srcObj.attr("data-i");
 			if(currDataI !== undefined){
 				currDataI = parseInt(currDataI);
-				let phrase = srcObj.attr("phrase");				
+				phrases = [];
 				let content = srcObj.text();
-				if(phrase){
-					phrases = phrase.split(",");
+				let ivsinfo = textinfo[currDataI];
+				if(ivsinfo){
+					let phrasearr = ivsinfo.phrasearr;
+					for(let ip in phrasearr){
+						let phrase = phrasearr[ip].phrase;
+						if(phrase && phrases.indexOf(phrase)<0){
+							// update ivs info
+							phrase = getIVSPhrase(phrasearr[ip]);
+							phrases.push(phrase);
+						}
+					}
 				}
 				if(content){
-					if(!phrases){
-						phrases = [];
-					}
 					phrases.push(content.charAt(0));
 				}
 			}						
-		}		
+		} else if(selectedString){
+			phrases = [selectedString];
+		}
 		
 		return {
 			phrases:phrases
 		};
+	}
+
+	function getIVSPhrase(param){
+		let {phrase, x, a, ivs} = param;
+		let phraseivs = "";
+		for(let ip=0; ip<phrase.length; ip++){
+			let preva = a-x+ip;
+			if(preva==a){
+				phraseivs += ivs;
+			} else {
+				let ivsinfo = textinfo[preva];
+				let previdx = ""+ip+phrase;
+				if(ivsinfo 
+					&& ivsinfo.phrasearr
+					&& ivsinfo.phraseidx 
+					&& ivsinfo.phraseidx[previdx] !== undefined){
+						phrasedata = ivsinfo.phrasearr[ivsinfo.phraseidx[previdx]];
+						phraseivs += phrasedata.ivs;
+				} else {
+					phraseivs += phrase[ip];
+				}
+			}
+		}
+
+		return phraseivs;
 	}
 
 	function initDom(){
@@ -131,20 +168,20 @@ function ZiHaiDicUI(){
 	}
 	
 	function ShowDicByCurr(){
-		let currObj = $(".curr");
-		if(currObj.length > 0){
-			let dicParam = {
-				srcObj:currObj
-			};
-			tzUpdateEvent(dicParam);		
+		if(!dicMinimized){
+			let currObj = $(".curr");
+			if(currObj.length > 0){
+				let dicParam = {
+					srcObj:currObj
+				};
+				tzUpdateEvent(dicParam);		
+			}
 		}
 	}
 
 	function toggleDicWin(){
 		dicMinimized = !dicMinimized;	
-		if(!dicMinimized){
-			ShowDicByCurr(); 
-		}	
+		ShowDicByCurr(); 
 	}
 
 	function render(){
