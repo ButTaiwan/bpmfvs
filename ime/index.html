@@ -17,7 +17,7 @@ body { background: #b0ebe4 }
 #input { font-family: ZY; height: 100%; font-size: 32px; line-height: 1.5; background: #fff; width: 100%; padding: 0; vertical-align: bottom; }
 #editor { font-family: ZY; height: 100%; font-size: 32px; line-height: 1.5; background: #fff; overflow: auto; padding: 0; display: none; border: 1px solid #777 }
 
-#panel { box-sizing: border-box; width: 100%; height: 106px; padding: 10px; background: #b0ebe4; user-select: none }
+#panel { box-sizing: border-box; width: 100%; height: 106px; padding: 10px; background: #b0ebe4; user-select: none; }
 #panel .navi { float: left; font-size: 30px; line-height: 80px; color: #fff; cursor: pointer }
 #selector { float: left; width: 706px; font-family: ZY; font-size: 68px; line-height: 1.2; border-radius: 15px; }
 #selector span { background-color: #ddd; float: left; margin: 0 5px; border-radius: 15px; padding-left: 5px; cursor: pointer }
@@ -32,7 +32,6 @@ span.curr { border: 2px solid #439abf }
 span.fuzzy { background: #f7b0c0; }
 span.auto { background: #f7cfb0; }
 span.ok { background: #98fade; }
-
 </style>
 <body>
 
@@ -45,7 +44,7 @@ span.ok { background: #98fade; }
 	<span class="p ok">字</span>已選擇讀音
 </div>
 <div id="main">
-	<textarea id="input"></textarea>
+	<textarea id="input"></textarea>	
 	<div id="editor">abs</div>
 </div>
 <div id="panel">
@@ -64,4 +63,6 @@ span.ok { background: #98fade; }
 <script src="jquery.min.js"></script>
 <script src="poyin_db.js" charset="utf-8"></script>
 <script src="ime.js" charset="utf-8"></script>
+<script src="tzdic/tzdicui.js" charset="utf-8"></script>
+<script src="zhdicui.js" charset="utf-8"></script>
 </html>
