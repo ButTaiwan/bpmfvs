@@ -69,7 +69,7 @@ $(document).ready(function () {
 						}
 						if(result || pi==0){
 							let phraseivs = item.q;
-							if(ivsdic){
+							if(ivsdic && result && yinarray){
 								phraseivs = "";
 								for(let iq in qarray){
 									let c = qarray[iq];
