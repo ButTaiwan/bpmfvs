@@ -3,7 +3,7 @@ const tzDicTitle = "字典";
 const tzDicWelcome = "請輸入並按下開始";
 const cssUI = 
 	".dicWinMin {position:absolute;top:0;right:0;font-size:24px;cursor: pointer;user-select: none;padding:0 10px 0 10px; overflow:hidden;} "
-	+ ".dicWin{background: linear-gradient(45deg, rgba(48, 48, 48, 0.7) 0%, rgba(32,32,32,0.9) 40%,rgba(48,48,48,0.7) 100%);opacity:0.95;color:#fff;padding:5px;"
+	+ ".dicWin{background: linear-gradient(45deg, rgba(16, 16, 16, 0.7) 0%, rgba(0,0,0,0.9) 40%,rgba(16,16,16,0.7) 100%) !important;opacity:0.95;color:#fff;padding:5px;"
 	+ "position:absolute;top:0;left:0;width:50%;height:100px;display:inline-block;} "
 	+ ".dicWinTitle {padding:5px;display:inline-block;width:100%;cursor: pointer;user-select: none;} "
 	+ ".dicWinDesc {position: absolute;width: 100%;height: 100%;display: flex;justify-content: center;align-items: center;} "
