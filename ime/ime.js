@@ -9,7 +9,7 @@ function chr(uni) {
 								0xdc00 | ((uni-0x10000) & 0x03ff));
 }
 
-function match(c, i, p, j) {
+function match(c, i, p, j, onlydic) {
 	var pos = p.indexOf('*');
 	if (i-pos<0) return false;
 	if (i-pos+p.length>text.length) return false;
@@ -18,11 +18,27 @@ function match(c, i, p, j) {
 	for (var z=i-pos; z<i-pos+p.length; z++) tmp += text[z].charAt(0);
 	if (tmp != p.replace(/\*/g, c)) return false;
 	
+	var phrase = p.replace("*",c);
 	for (var x=0; x<p.length; x++) {
-		if (p.charAt(x) == '*') {
-			var a = i-pos+x;
+		var a = i-pos+x;
+		var spobj = $('#sp' + a);
+		var phraseattr = spobj.attr("phrase");
+		if(phraseattr === undefined){
+			phraseattr = phrase;
+		} else {
+			var phrasearr = phraseattr.split(",");
+			if(phrasearr.indexOf(phrase)<0){
+				phrasearr.push(phrase);
+			}
+			phraseattr = phrasearr.join(",");
+		}
+		 
+		var spDom = spobj.attr({
+			"phrase":phraseattr
+		});
+		if (p.charAt(x) == '*' && !onlydic) {
 			text[a] = c + (j > 0 ? chr(vsbase + j*1) : '');
-			$('#sp' + a).text(text[a]).addClass('auto');
+			spDom.text(text[a]).addClass('auto');
 		}
 	}
 }
@@ -32,14 +48,19 @@ function autoSelect() {
 		var t = text[i];
 		var c = t.charAt(0);
 		if (!data[c]) continue;
-		if (t.length > 1) continue;
+		var onlydic = false;
+		if (t.length > 1) {
+			// For IVS char, do not overwrite the inserted text
+			onlydic = true;
+		};
+		//if (t.length > 1) continue;
 		if (!data[c].v) continue;
 		
 here:	for (var j in data[c].v) {
 			if (!data[c].v[j]) continue;
 			var list = data[c].v[j].split('/');
 			for (var n=0; n<list.length; n++) {
-				if (match(c, i, list[n], j)) break here;
+				if (match(c, i, list[n], j, onlydic)) break here;
 			}
 			//console.log(list);
 		}
@@ -135,7 +156,7 @@ $('#start').click(function() {
 	$('#start').hide();
 	$('#info2').show();
 	$('#info1').hide();
-	
+
 	setEditorText(t);
 });
 

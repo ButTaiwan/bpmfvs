@@ -23,6 +23,10 @@
 
 本詞庫目前原則上收錄《國語一字多音審訂表(初稿)》的讀音。
 
+## 字典
+
+在按下 「開始」 後的編輯模式中，點選右下角 「字典」 可開啟 《國語字典簡編本》 輔助查詢字義及標準讀音。
+
 ## 協作邀請 (詞庫)
 
 poyin_db.txt 收錄了所有 phonetic/phonic_table_Z.txt 裡所有多音字的每個讀音。
@@ -59,6 +63,13 @@ poyin_db.txt 收錄了所有 phonetic/phonic_table_Z.txt 裡所有多音字的�
 例如目前版本對於「一」、「不」等變音字也只能靠詞庫窮舉，或許可以讀入完整讀音檔案，從下一個字的聲調去判斷等等。
 
 另外，本注音字型規格其實還有提供U+E01E0異體，可顯示為不帶注音符號（只有國字部分）。不過此輸入工具目前也未支援選擇這個模式。
+
+## 協作邀請 (字典)
+
+本工具字典檔資料來自於教育部國語辭典公眾授權網 《<a href="https://language.moe.gov.tw/001/Upload/Files/site_content/M0001/respub/dict_concised_download.html">國語辭典簡編本</a>》，採用「CC BY-ND 3.0」授權。
+
+字典工具來自於開源字典架構 「<a href="https://github.com/jeffreyxuan/ToneOZDic">ToneOZDic澳聲通字典</a>」 ，採用 MIT 授權。 此字典工具支援使用者自行製作字典檔，請參考 <a href="https://github.com/jeffreyxuan/ToneOZDic/blob/main/README.md">字典檔生成器使用說明</a>。
+
 
 
 歡迎 Pull Request，或自行 fork 新專案。
