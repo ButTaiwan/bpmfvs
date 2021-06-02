@@ -16,6 +16,7 @@ if(!window.tzdicidx){
 }
 
 function TZDicUI(){	
+	let thisObj = this;
 	// ToneOZDic Parameters
 	let tzparam = {
 		objInput : null 		
@@ -34,6 +35,8 @@ function TZDicUI(){
 		// Custeom lookup table to specify the IVS fonts (Ideographic Variation Sequences) displayed in the dictionary entry iframe
 		, strCssIframe : tzstrCssIframe
 		// Custom css object to decorate the objIframe outter position
+		, intMaxPhrase : 16
+		// Max phrases per query
 		, strVer : ""
 		// Version control string
 	};
@@ -73,10 +76,13 @@ function TZDicUI(){
 		
 		// events init
 		tzparam.objInput.on('input selectionchange propertychange keydown click focus', function(event) {
-			tzUpdateEvent({event:event});
+			thisObj.tzUpdateEvent({event:event});
+		});
+		tzparam.objInput.on('DOMSubtreeModified', function(event) {
+			thisObj.tzUpdateEvent({event:event});
 		});			
 		$(document).on('mouseup', function(event) {
-			tzUpdateEvent({event:event});
+			thisObj.tzUpdateEvent({event:event});
 		});	
 		
 		return tzparam;
@@ -99,7 +105,7 @@ function TZDicUI(){
 	}
 	
 	let tmrUpdateEvent = null;
-	window.tzUpdateEvent = function(dicParam){	
+	this.tzUpdateEvent = function(dicParam){	
 		if(tmrUpdateEvent){
 			clearTimeout(tmrUpdateEvent);
 			tmrUpdateEvent = null;
@@ -154,9 +160,12 @@ function TZDicUI(){
 		// get query parameters for ToneOZDic
 		for(let idxPhrase in phrases){
 			let phrase = phrases[idxPhrase];
+			if(qArray.length >= tzparam.intMaxPhrase){
+				break;
+			}
 			qArray.push(GetQuery({
 				phrase : phrase
-			}));
+			}));			
 		}
 		
 		let dicURLParam = JSON.stringify(qArray);

@@ -11,6 +11,7 @@ const cssUI =
 const pathCssDic = "../zihaidic";
 const pathJsIVSLookup = "../zhuivsdic";
 const strVer="";	
+const intMaxPhrase = 16;
 // End CONFIG======
 
 $(document).ready(function () {
@@ -22,40 +23,38 @@ function ZiHaiDicUI(){
 	let domDic = {};
 	let isIframeReady = null;
 	let dicMinimized = true;
-	
+	let tzDicUI;
 	init();
 
-	function init(){
-		if (typeof tzDicUI === 'undefined') {	
-			initDom();		
+	function init(){	
+		initDom();		
+	
+		// load TonzOZDic		
+		tzDicUI = new TZDicUI();
+		tzDicUI.init({
+			objInput : domDic["editor"]
+			, objOutput : domDic["dicResult"]
+			, fnGetPhrases : fnGetPhrases
+			, pathCssDic : pathCssDic
+			, pathJsIVSLookup : pathJsIVSLookup
+			, intMaxPhrase : intMaxPhrase
+			, strVer : strVer
+		});
 		
-			// load TonzOZDic		
-			window.tzDicUI = new TZDicUI();
-			tzDicUI.init({
-				objInput : domDic["editor"]
-				, objOutput : domDic["dicResult"]
-				, fnGetPhrases : fnGetPhrases
-				, pathCssDic : pathCssDic
-				, pathJsIVSLookup : pathJsIVSLookup
-				, strVer : strVer
-			});
-			
-			initUIEvent();
-		}
+		initUIEvent();
 	}
 	
 	/**
 	* Get words for dictionay queries
-	* Read "phrase" from a jQuery object's attr. 
-	* @param {any} event : jQuery UI event
-	* @param {any} srcObj : a jQuery object with attr "phrase"
-	* @return {array} words: output words array e.g.: ["行人","行"]
+	* @param {any} event : jQuery UI event. Use it to find the srcObj that the user clicked
+	* @param {any} srcObj : a jQuery object with attr "data-i" to lookup the phrase from textinfo
+	* @return {array} words: output words array with ivs characters. e.g.: ["行人","行"]
 	*/
 	function fnGetPhrases(param){
 		let {event,srcObj} = param;
 		let phrases = null;
 		let selectedString = null;
-		isIframeReady = false;
+		
 		if(!srcObj && event && event.target){
 			srcObj = $(event.target);	
 			if (window.getSelection) {
@@ -73,19 +72,22 @@ function ZiHaiDicUI(){
 					let phrasearr = ivsinfo.phrasearr;
 					for(let ip in phrasearr){
 						let phrase = phrasearr[ip].phrase;
-						if(phrase && phrases.indexOf(phrase)<0){
+						if(phrase && phrases.indexOf(phrase)<0 && phrases.length < intMaxPhrase){
 							// update ivs info
 							phrase = getIVSPhrase(phrasearr[ip]);
 							phrases.push(phrase);
 						}
 					}
 				}
-				if(content){
+				if(content && phrases.length < intMaxPhrase){
 					phrases.push(content.charAt(0));
 				}
 			}						
 		} else if(selectedString){
 			phrases = [selectedString];
+		}
+		if(phrases != null){
+			isIframeReady = false;
 		}
 		
 		return {
@@ -94,25 +96,12 @@ function ZiHaiDicUI(){
 	}
 
 	function getIVSPhrase(param){
-		let {phrase, x, a, ivs} = param;
+		let {phrase, x, a} = param;
 		let phraseivs = "";
 		for(let ip=0; ip<phrase.length; ip++){
 			let preva = a-x+ip;
-			if(preva==a){
-				phraseivs += ivs;
-			} else {
-				let ivsinfo = textinfo[preva];
-				let previdx = ""+ip+phrase;
-				if(ivsinfo 
-					&& ivsinfo.phrasearr
-					&& ivsinfo.phraseidx 
-					&& ivsinfo.phraseidx[previdx] !== undefined){
-						phrasedata = ivsinfo.phrasearr[ivsinfo.phraseidx[previdx]];
-						phraseivs += phrasedata.ivs;
-				} else {
-					phraseivs += phrase[ip];
-				}
-			}
+			let ivsc = text[preva];
+			phraseivs += ivsc;			
 		}
 
 		return phraseivs;
@@ -152,7 +141,7 @@ function ZiHaiDicUI(){
 			render();
 		});
 		
-		$('#prev, #next, #start').click(function() { 
+		$('#prev, #next, #start, #selector').click(function() { 
 			ShowDicByCurr(); 
 		});		
 
@@ -174,7 +163,7 @@ function ZiHaiDicUI(){
 				let dicParam = {
 					srcObj:currObj
 				};
-				tzUpdateEvent(dicParam);		
+				tzDicUI.tzUpdateEvent(dicParam);		
 			}
 		}
 	}

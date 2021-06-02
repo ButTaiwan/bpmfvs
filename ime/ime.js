@@ -35,20 +35,14 @@ function match(c, i, p, j, onlydic) {
 			textinfo[a] = {};
 		}
 		var ivsinfo = textinfo[a];
-		var phrasearr = ivsinfo.phrasearr;
-		var phraseidx = ivsinfo.phraseidx;
-		var phrasedata = {phrase:phrase,x:x,a:a,ivs:text[a]};;
-		if(phraseidx === undefined){
-			phraseidx = {};
-		}
+		var phrasearr = ivsinfo.phrasearr;		
+		var phrasedata = {phrase:phrase,x:x,a:a};
 		if(phrasearr === undefined){
 			phrasearr = [phrasedata];
 		} else {
 			phrasearr.push(phrasedata);
 		} 
-		phraseidx[""+x+phrase] = phrasearr.length-1;
 		ivsinfo.phrasearr = phrasearr;
-		ivsinfo.phraseidx = phraseidx;
 	}
 }
 

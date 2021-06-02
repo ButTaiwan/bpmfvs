@@ -1,8 +1,11 @@
 // BEGIN CONFIG /////////
+// Folder path of the dictionary files
 const defaultDataFolder = "./tzdata/";
+// Max phrases per query 
+const intMaxPhrase = 16;
 // END CONFIG /////////
 const vsbase = 0xe01e0;
-let tzQuery, tzQueryArray, tzCss, tzIvsPosDic;
+let tzQuery, tzQueryArray, tzCss, tzIvsPosDic, tzVer;
 let winSearch = window.location.search;
 if(!window.tzdic){
 	window.tzdic = {};
@@ -12,19 +15,23 @@ if(winSearch){
 	tzQuery = urlParams.get("q");	
 	tzCss = urlParams.get("css");	
 	tzIvsPosDic = urlParams.get("ivs");	
+	tzVer = urlParams.get("v");	
+	tzVer = (tzVer?"?v="+tzVer:"");
 	tzQueryArray = JSON.parse(tzQuery);	
 	if(tzCss){
-		document.write('<link rel="stylesheet" href="'+tzCss+'" />');
+		document.write('<link rel="stylesheet" href="'+tzCss + tzVer +'" />');
 	}
 	if(tzIvsPosDic){
-		document.write('<script type="text/javascript" src="' +tzIvsPosDic+'">\x3C/script>');
+		document.write('<script type="text/javascript" src="' +tzIvsPosDic
+		+ tzVer + '">\x3C/script>');
 	}
 	if(tzQueryArray){
 		for(let qIdx in tzQueryArray){
 			if(tzQueryArray[qIdx].id){
 				document.write('<script type="text/javascript" src="' 
 				+ defaultDataFolder
-				+ (""+tzQueryArray[qIdx].id)+'.js">\x3C/script>');
+				+ (""+tzQueryArray[qIdx].id)+'.js'
+				+ tzVer + '">\x3C/script>');
 			}
 		}			
 	}	
@@ -38,7 +45,7 @@ $(document).ready(function () {
 		window.ivsdic = null;
 	}
 	if(tzdic){
-		for(let qIdx in tzQueryArray){
+		for(let qIdx=0; qIdx<tzQueryArray.length; qIdx++){
 			let item = tzQueryArray[qIdx];
 			let dicSlot = null;
 			if(item.id){
@@ -61,7 +68,7 @@ $(document).ready(function () {
 						if(tzdic[dicSlot]){
 							// dictionary lookup
 							result = tzdic[dicSlot][noivs+posfix];
-							if(ivsdic){
+							if(result && ivsdic){
 								qarray = noivs.split("");
 								if(result && result.z){
 									yinarray = result.z.split(new RegExp(separators.join('|'), 'g'));
@@ -96,6 +103,9 @@ $(document).ready(function () {
 						}
 					}
 				}
+			}
+			if(qIdx >= intMaxPhrase-1){
+				break;
 			}
 		}	
 	}
