@@ -84,7 +84,12 @@ function ZiHaiDicUI(){
 				}
 			}						
 		} else if(selectedString){
-			phrases = [selectedString];
+			selectedString = selectedString.substr(0,intMaxPhrase-1);
+			let selectedArr = selectedString.split("");
+			if(selectedArr.length > 1){
+				selectedArr.unshift(selectedString);
+			}
+			phrases = selectedArr;
 		}
 		if(phrases != null){
 			isIframeReady = false;
