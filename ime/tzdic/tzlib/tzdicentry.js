@@ -45,6 +45,7 @@ $(document).ready(function () {
 		window.ivsdic = null;
 	}
 	if(tzdic){
+		let isPrevIVSCtl = false;
 		for(let qIdx=0; qIdx<tzQueryArray.length; qIdx++){
 			let item = tzQueryArray[qIdx];
 			let dicSlot = null;
@@ -52,7 +53,6 @@ $(document).ready(function () {
 				dicSlot = ""+item.id;
 			}
 			if(item.q){					
-				let unsortPoyinArray = [];
 				for(let pi = 0; pi < poyinMaxCount; pi++){
 					// lookup each poyin option
 					let posfix = "";
@@ -64,6 +64,16 @@ $(document).ready(function () {
 						let qarray = null;
 						let yinarray = null;
 						let noivs = removeIVS(item.q);
+						if(item.q && !noivs){
+							isPrevIVSCtl = true;
+							break;;
+						}
+						if(isPrevIVSCtl){
+							isPrevIVSCtl = false;
+							if(HasIvsPair(item.q)){
+								break;
+							}
+						}
 						// check is the dictionary data tzdata loaded
 						if(tzdic[dicSlot]){
 							// dictionary lookup
@@ -102,7 +112,7 @@ $(document).ready(function () {
 								.append(dDom);
 						}
 					}
-				}
+				}								
 			}
 			if(qIdx >= intMaxPhrase-1){
 				break;
@@ -133,6 +143,10 @@ function removeIVS(q){
 		}
 	}
 	return noivs;
+}
+
+function HasIvsPair(q){
+	return q.match(/([\ud800-\udfff])/g);
 }
 
 function chr(uni) {
