@@ -1,8 +1,11 @@
 // BEGIN CONFIG /////////
+// Folder path of the dictionary files
 const defaultDataFolder = "./tzdata/";
+// Max phrases per query 
+const intMaxPhrase = 16;
 // END CONFIG /////////
 const vsbase = 0xe01e0;
-let tzQuery, tzQueryArray, tzCss, tzIvsPosDic;
+let tzQuery, tzQueryArray, tzCss, tzIvsPosDic, tzVer;
 let winSearch = window.location.search;
 if(!window.tzdic){
 	window.tzdic = {};
@@ -12,19 +15,23 @@ if(winSearch){
 	tzQuery = urlParams.get("q");	
 	tzCss = urlParams.get("css");	
 	tzIvsPosDic = urlParams.get("ivs");	
+	tzVer = urlParams.get("v");	
+	tzVer = (tzVer?"?v="+tzVer:"");
 	tzQueryArray = JSON.parse(tzQuery);	
 	if(tzCss){
-		document.write('<link rel="stylesheet" href="'+tzCss+'" />');
+		document.write('<link rel="stylesheet" href="'+tzCss + tzVer +'" />');
 	}
 	if(tzIvsPosDic){
-		document.write('<script type="text/javascript" src="' +tzIvsPosDic+'">\x3C/script>');
+		document.write('<script type="text/javascript" src="' +tzIvsPosDic
+		+ tzVer + '">\x3C/script>');
 	}
 	if(tzQueryArray){
 		for(let qIdx in tzQueryArray){
 			if(tzQueryArray[qIdx].id){
 				document.write('<script type="text/javascript" src="' 
 				+ defaultDataFolder
-				+ (""+tzQueryArray[qIdx].id)+'.js">\x3C/script>');
+				+ (""+tzQueryArray[qIdx].id)+'.js'
+				+ tzVer + '">\x3C/script>');
 			}
 		}			
 	}	
@@ -38,14 +45,14 @@ $(document).ready(function () {
 		window.ivsdic = null;
 	}
 	if(tzdic){
-		for(let qIdx in tzQueryArray){
+		let isPrevIVSCtl = false;
+		for(let qIdx=0; qIdx<tzQueryArray.length; qIdx++){
 			let item = tzQueryArray[qIdx];
 			let dicSlot = null;
 			if(item.id){
 				dicSlot = ""+item.id;
 			}
 			if(item.q){					
-				let unsortPoyinArray = [];
 				for(let pi = 0; pi < poyinMaxCount; pi++){
 					// lookup each poyin option
 					let posfix = "";
@@ -56,12 +63,23 @@ $(document).ready(function () {
 					if(item.q){	
 						let qarray = null;
 						let yinarray = null;
+						let noivs = removeIVS(item.q);
+						if(item.q && !noivs){
+							isPrevIVSCtl = true;
+							break;;
+						}
+						if(isPrevIVSCtl){
+							isPrevIVSCtl = false;
+							if(HasIvsPair(item.q)){
+								break;
+							}
+						}
 						// check is the dictionary data tzdata loaded
 						if(tzdic[dicSlot]){
 							// dictionary lookup
-							result = tzdic[dicSlot][item.q+posfix];
-							if(ivsdic){
-								qarray = item.q.split("");
+							result = tzdic[dicSlot][noivs+posfix];
+							if(result && ivsdic){
+								qarray = noivs.split("");
 								if(result && result.z){
 									yinarray = result.z.split(new RegExp(separators.join('|'), 'g'));
 								}
@@ -94,7 +112,10 @@ $(document).ready(function () {
 								.append(dDom);
 						}
 					}
-				}
+				}								
+			}
+			if(qIdx >= intMaxPhrase-1){
+				break;
 			}
 		}	
 	}
@@ -103,6 +124,29 @@ $(document).ready(function () {
 
 function getIVS(c, j){
 	return c + (j > 0 ? chr(vsbase + j*1) : '');
+}
+
+function removeIVS(q){
+	let noivs = "";
+	if(q){
+		let qarr = q.split("");
+		let prevIsVbase = false;
+		for(iq=0;iq<qarr.length;iq++){
+			if(qarr[iq] == "\udb40"){
+				prevIsVbase = true;
+				continue;
+			} 
+			if(!prevIsVbase){
+				noivs += qarr[iq];
+			}
+			prevIsVbase = false;
+		}
+	}
+	return noivs;
+}
+
+function HasIvsPair(q){
+	return q.match(/([\ud800-\udfff])/g);
 }
 
 function chr(uni) {

@@ -16,6 +16,7 @@ if(!window.tzdicidx){
 }
 
 function TZDicUI(){	
+	let thisObj = this;
 	// ToneOZDic Parameters
 	let tzparam = {
 		objInput : null 		
@@ -34,6 +35,8 @@ function TZDicUI(){
 		// Custeom lookup table to specify the IVS fonts (Ideographic Variation Sequences) displayed in the dictionary entry iframe
 		, strCssIframe : tzstrCssIframe
 		// Custom css object to decorate the objIframe outter position
+		, intMaxPhrase : 16
+		// Max phrases per query
 		, strVer : ""
 		// Version control string
 	};
@@ -73,10 +76,13 @@ function TZDicUI(){
 		
 		// events init
 		tzparam.objInput.on('input selectionchange propertychange keydown click focus', function(event) {
-			tzUpdateEvent({event:event});
+			thisObj.tzUpdateEvent({event:event});
+		});
+		tzparam.objInput.on('DOMSubtreeModified', function(event) {
+			thisObj.tzUpdateEvent({event:event});
 		});			
 		$(document).on('mouseup', function(event) {
-			tzUpdateEvent({event:event});
+			thisObj.tzUpdateEvent({event:event});
 		});	
 		
 		return tzparam;
@@ -98,82 +104,85 @@ function TZDicUI(){
 		return hash;
 	}
 	
-	window.tzUpdateEvent = function(dicParam){		
-		if(tzparam.fnGetPhrases){
-			let phrasesInfo = tzparam.fnGetPhrases(dicParam);
-			if(!phrasesInfo.phrases){
-				// not a valid query
-				return;
+	let tmrUpdateEvent = null;
+	this.tzUpdateEvent = function(dicParam){	
+		if(tmrUpdateEvent){
+			clearTimeout(tmrUpdateEvent);
+			tmrUpdateEvent = null;
+		}	
+		tmrUpdateEvent = setTimeout(function(){
+			if(tzparam.fnGetPhrases){
+				let phrasesInfo = tzparam.fnGetPhrases(dicParam);
+				if(!phrasesInfo.phrases){
+					// not a valid query
+					return;
+				}
+				Object.assign(dicParam, phrasesInfo);
 			}
-			Object.assign(dicParam, phrasesInfo);
-		}
-		UpdateDic(dicParam);
+			UpdateDic(dicParam);
+		},200);
 	}
 
-	let tmrUpdateDic = null;
 	function UpdateDic(dicparam){				
-		if(tmrUpdateDic){
-			clearTimeout(tmrUpdateDic);
-			tmrUpdateDic = null;
-		}		
 		if(!dicparam){
 			dicparam = {};
 		}
 		let {event, phrases, rawstr} = dicparam;
-		tmrUpdateDic = setTimeout(function(){
-			let qArray = [];
-			let tmpq, id, hash, isChinese, objSrc;
+		let qArray = [];
+		let tmpq, id, hash, isChinese, objSrc;
 
-			if(!phrases && !rawstr){
-				if(event && event.target){
-					objSrc = $(event.target);
-				} else {
-					objSrc = tzparam.objInput;
-				}
-				// get selected string from a textarea
-				rawstr = GetSelectedString(objSrc);
+		if(!phrases && !rawstr){
+			if(event && event.target){
+				objSrc = $(event.target);
+			} else {
+				objSrc = tzparam.objInput;
 			}
-			if(rawstr){
-				rawstr = rawstr.trim();
-				// query each words in the selected string
-				let rawstrarr = splitx(rawstr);
-				if(!phrases){
-					phrases = [];
-				}
-				phrases = phrases.concat(rawstrarr);
-				
-				// add selected string as the first query phrase
-				if(phrases.indexOf(rawstr)<0){
-					qArray.push(GetQuery({
-						phrase : rawstr
-					}));				
-				}
+			// get selected string from a textarea
+			rawstr = GetSelectedString(objSrc);
+		}
+		if(rawstr){
+			rawstr = rawstr.trim();
+			// query each words in the selected string
+			let rawstrarr = splitx(rawstr);
+			if(!phrases){
+				phrases = [];
 			}
+			phrases = phrases.concat(rawstrarr);
 			
-			// get query parameters for ToneOZDic
-			for(let idxPhrase in phrases){
-				let phrase = phrases[idxPhrase];
+			// add selected string as the first query phrase
+			if(phrases.indexOf(rawstr)<0){
 				qArray.push(GetQuery({
-					phrase : phrase
-				}));
+					phrase : rawstr
+				}));				
 			}
-			
-			let dicURLParam = JSON.stringify(qArray);
-			
-			// do dictionary query
-			let dicURLBase = tzDicEntryHTML + "?" 
-				+ (tzparam.strVer ? "v="+tzparam.strVer+"&" : "");
-			let URL = dicURLBase+"q="+dicURLParam;			
-			if(tzparam.pathCssDic){
-				URL += "&css=" + encodeURIComponent(tzparam.pathCssDic+".css");
+		}
+		
+		// get query parameters for ToneOZDic
+		for(let idxPhrase in phrases){
+			let phrase = phrases[idxPhrase];
+			if(qArray.length >= tzparam.intMaxPhrase){
+				break;
 			}
-			if(tzparam.pathJsIVSLookup){
-				URL += "&ivs=" + encodeURIComponent(tzparam.pathJsIVSLookup+".js");
-			}
-			tzparam.objIframe.attr("src", URL).show();
-			tmrUpdateDic = null;
-			console.log(URL);
-		},200);
+			qArray.push(GetQuery({
+				phrase : phrase
+			}));			
+		}
+		
+		let dicURLParam = JSON.stringify(qArray);
+		
+		// do dictionary query
+		let dicURLBase = tzDicEntryHTML + "?" 
+			+ (tzparam.strVer ? "v="+tzparam.strVer+"&" : "");
+		let URL = dicURLBase+"q="+dicURLParam;			
+		if(tzparam.pathCssDic){
+			URL += "&css=" + encodeURIComponent(tzparam.pathCssDic+".css");
+		}
+		if(tzparam.pathJsIVSLookup){
+			URL += "&ivs=" + encodeURIComponent(tzparam.pathJsIVSLookup+".js");
+		}
+		tzparam.objIframe.attr("src", URL).show();
+		tmrUpdateDic = null;
+		//console.log(URL);
 	};	
 	
 	function GetQuery(param){

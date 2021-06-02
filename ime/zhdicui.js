@@ -11,6 +11,7 @@ const cssUI =
 const pathCssDic = "../zihaidic";
 const pathJsIVSLookup = "../zhuivsdic";
 const strVer="";	
+const intMaxPhrase = 16;
 // End CONFIG======
 
 $(document).ready(function () {
@@ -22,63 +23,93 @@ function ZiHaiDicUI(){
 	let domDic = {};
 	let isIframeReady = null;
 	let dicMinimized = true;
-	
+	let tzDicUI;
 	init();
 
-	function init(){
-		if (typeof tzDicUI === 'undefined') {	
-			initDom();		
+	function init(){	
+		initDom();		
+	
+		// load TonzOZDic		
+		tzDicUI = new TZDicUI();
+		tzDicUI.init({
+			objInput : domDic["editor"]
+			, objOutput : domDic["dicResult"]
+			, fnGetPhrases : fnGetPhrases
+			, pathCssDic : pathCssDic
+			, pathJsIVSLookup : pathJsIVSLookup
+			, intMaxPhrase : intMaxPhrase
+			, strVer : strVer
+		});
 		
-			// load TonzOZDic		
-			window.tzDicUI = new TZDicUI();
-			tzDicUI.init({
-				objInput : domDic["editor"]
-				, objOutput : domDic["dicResult"]
-				, fnGetPhrases : fnGetPhrases
-				, pathCssDic : pathCssDic
-				, pathJsIVSLookup : pathJsIVSLookup
-				, strVer : strVer
-			});
-			
-			initUIEvent();
-		}
+		initUIEvent();
 	}
 	
 	/**
 	* Get words for dictionay queries
-	* Read "phrase" from a jQuery object's attr. 
-	* @param {any} event : jQuery UI event
-	* @param {any} srcObj : a jQuery object with attr "phrase"
-	* @return {array} words: output words array e.g.: ["行人","行"]
+	* @param {any} event : jQuery UI event. Use it to find the srcObj that the user clicked
+	* @param {any} srcObj : a jQuery object with attr "data-i" to lookup the phrase from textinfo
+	* @return {array} words: output words array with ivs characters. e.g.: ["行人","行"]
 	*/
 	function fnGetPhrases(param){
 		let {event,srcObj} = param;
 		let phrases = null;
-		isIframeReady = false;
+		let selectedString = null;
+		
 		if(!srcObj && event && event.target){
-			srcObj = $(event.target);						
+			srcObj = $(event.target);	
+			if (window.getSelection) {
+				selectedString = window.getSelection().toString();
+			}					
 		}	
-		if(srcObj){
+		if(srcObj && !selectedString){
 			let currDataI = srcObj.attr("data-i");
 			if(currDataI !== undefined){
 				currDataI = parseInt(currDataI);
-				let phrase = srcObj.attr("phrase");				
+				phrases = [];
 				let content = srcObj.text();
-				if(phrase){
-					phrases = phrase.split(",");
-				}
-				if(content){
-					if(!phrases){
-						phrases = [];
+				let ivsinfo = textinfo[currDataI];
+				if(ivsinfo){
+					let phrasearr = ivsinfo.phrasearr;
+					for(let ip in phrasearr){
+						let phrase = phrasearr[ip].phrase;
+						if(phrase && phrases.indexOf(phrase)<0 && phrases.length < intMaxPhrase){
+							// update ivs info
+							phrase = getIVSPhrase(phrasearr[ip]);
+							phrases.push(phrase);
+						}
 					}
+				}
+				if(content && phrases.length < intMaxPhrase){
 					phrases.push(content.charAt(0));
 				}
 			}						
-		}		
+		} else if(selectedString){
+			selectedString = selectedString.substr(0,intMaxPhrase-1);
+			let selectedArr = selectedString.split("");
+			if(selectedArr.length > 1){
+				selectedArr.unshift(selectedString);
+			}
+			phrases = selectedArr;
+		}
+		if(phrases != null){
+			isIframeReady = false;
+		}
 		
 		return {
 			phrases:phrases
 		};
+	}
+
+	function getIVSPhrase(param){
+		let {phrase, x, a} = param;
+		let phraseivs = "";
+		for(let ip=0; ip<phrase.length; ip++){
+			let preva = a-x+ip;
+			let ivsc = text[preva];
+			phraseivs += ivsc;			
+		}
+
+		return phraseivs;
 	}
 
 	function initDom(){
@@ -115,7 +146,7 @@ function ZiHaiDicUI(){
 			render();
 		});
 		
-		$('#prev, #next, #start').click(function() { 
+		$('#prev, #next, #start, #selector').click(function() { 
 			ShowDicByCurr(); 
 		});		
 
@@ -131,20 +162,20 @@ function ZiHaiDicUI(){
 	}
 	
 	function ShowDicByCurr(){
-		let currObj = $(".curr");
-		if(currObj.length > 0){
-			let dicParam = {
-				srcObj:currObj
-			};
-			tzUpdateEvent(dicParam);		
+		if(!dicMinimized){
+			let currObj = $(".curr");
+			if(currObj.length > 0){
+				let dicParam = {
+					srcObj:currObj
+				};
+				tzDicUI.tzUpdateEvent(dicParam);		
+			}
 		}
 	}
 
 	function toggleDicWin(){
 		dicMinimized = !dicMinimized;	
-		if(!dicMinimized){
-			ShowDicByCurr(); 
-		}	
+		ShowDicByCurr(); 
 	}
 
 	function render(){

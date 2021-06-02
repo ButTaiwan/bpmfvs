@@ -1,6 +1,7 @@
 var text = [];
 var curr = -1;
 var vsbase = 0xe01e0;
+window.textinfo = {};
 
 function chr(uni) {
 	if (String.fromCodePoint) return String.fromCodePoint(uni);	// ES6
@@ -21,25 +22,27 @@ function match(c, i, p, j, onlydic) {
 	var phrase = p.replace("*",c);
 	for (var x=0; x<p.length; x++) {
 		var a = i-pos+x;
-		var spobj = $('#sp' + a);
-		var phraseattr = spobj.attr("phrase");
-		if(phraseattr === undefined){
-			phraseattr = phrase;
-		} else {
-			var phrasearr = phraseattr.split(",");
-			if(phrasearr.indexOf(phrase)<0){
-				phrasearr.push(phrase);
-			}
-			phraseattr = phrasearr.join(",");
-		}
-		 
-		var spDom = spobj.attr({
-			"phrase":phraseattr
-		});
+		var spDom = $('#sp' + a);
+		
+		// update ivs
 		if (p.charAt(x) == '*' && !onlydic) {
 			text[a] = c + (j > 0 ? chr(vsbase + j*1) : '');
 			spDom.text(text[a]).addClass('auto');
 		}
+
+		// update phrase for dic
+		if(!textinfo[a]){
+			textinfo[a] = {};
+		}
+		var ivsinfo = textinfo[a];
+		var phrasearr = ivsinfo.phrasearr;		
+		var phrasedata = {phrase:phrase,x:x,a:a};
+		if(phrasearr === undefined){
+			phrasearr = [phrasedata];
+		} else {
+			phrasearr.push(phrasedata);
+		} 
+		ivsinfo.phrasearr = phrasearr;
 	}
 }
 
@@ -109,6 +112,7 @@ function setEditorText(t) {
 	// [\ud800-\udfff] means surrogate pairs of UTF-16
 	// Here I wrote /(.|\n)/g because MS Edge doesn't support /(.)/s.
 	text = t.replace(/(.|\n)/g, "\x01$1").replace(/\x01([\ud800-\udfff])/g, "$1").split(/\x01/);
+	textinfo = {};
 
 	var editor = $('#editor');
 	$('#editor').empty();
