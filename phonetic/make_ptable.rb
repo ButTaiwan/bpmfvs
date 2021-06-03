@@ -315,7 +315,7 @@ def make_tableZ
 	}
 	f.close
 
-	# (C) 化學讀音表 (by 國家教育研究院)  *A已收錄之文字捨棄
+	# (C) 化學讀音表 (by 國家教育研究院)  *A已收錄之文字亦收
 	f = File.open('phonic_table_C.txt', 'r:utf-8')
 	f.each { |s|
 		s.chomp!
@@ -369,14 +369,14 @@ def make_tableZ
 	}
 	f.close
 
-	# (E) 輕聲字 *先只處理常用字A範圍
+	# (E) 人工增補讀音（輕聲字與地名等） *先只處理常用字A範圍
 	f = File.open('phonic_table_E.txt', 'r:utf-8')
 	f.each { |s|
 		s.chomp!
 		s.gsub!(/\s*#.*$/, '')
 		c, d, e, rs = s.split(/\t/, 4)
 
-		if src.has_key?(c) && src[c] =~ /^A/
+		if src.has_key?(c) #&& src[c] =~ /^A/
 			read[c] = {} unless read.has_key?(c)
 			rs.split(/\t/).each { |t| 
 				read[c][t] = 0 if !read[c].has_key?(t)

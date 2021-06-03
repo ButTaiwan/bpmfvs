@@ -8,11 +8,16 @@ const cssUI =
 	+ ".dicWinTitle {padding:5px;display:inline-block;width:100%;cursor: pointer;user-select: none;} "
 	+ ".dicWinDesc {position: absolute;width: 100%;height: 100%;display: flex;justify-content: center;align-items: center;} "
 	;
-const pathCssDic = "../zihaidic";
-const pathJsIVSLookup = "../zhuivsdic";
+const pathCssDic = '../zihaidic';
+const pathJsIVSLookup = '../zhuivsdic';
 const strVer="";	
 const intMaxPhrase = 16;
 // End CONFIG======
+
+String.prototype.unicharAt = function (i) {
+	if (this.charAt(i).match(/[\ud800-\udb7f]/)) return this.substr(i, 2);
+	return this.charAt(i);
+};
 
 $(document).ready(function () {
 	// ZiHaiDicUI init
@@ -64,11 +69,11 @@ function ZiHaiDicUI(){
 		if(srcObj && !selectedString){
 			let currDataI = srcObj.attr("data-i");
 			if(currDataI !== undefined){
-				currDataI = parseInt(currDataI);
+				currDataI = currDataI*1;
 				phrases = [];
 				let content = srcObj.text();
 				let ivsinfo = textinfo[currDataI];
-				if(ivsinfo){
+				if (ivsinfo) {
 					let phrasearr = ivsinfo.phrasearr;
 					for(let ip in phrasearr){
 						let phrase = phrasearr[ip].phrase;
@@ -79,13 +84,13 @@ function ZiHaiDicUI(){
 						}
 					}
 				}
-				if(content && phrases.length < intMaxPhrase){
-					phrases.push(content.charAt(0));
+				if (content && phrases.length < intMaxPhrase){
+					phrases.push(content.unicharAt(0));
 				}
 			}						
 		} else if(selectedString){
-			selectedString = selectedString.substr(0,intMaxPhrase-1);
-			let selectedArr = selectedString.split("");
+			selectedString = selectedString.substr(0, intMaxPhrase-1);
+			let selectedArr = selectedString.replace(/(.|\n)/g, "\x01$1").replace(/\x01([\udb40\udc00-\udfff])/g, "$1").split(/\x01/);
 			if(selectedArr.length > 1){
 				selectedArr.unshift(selectedString);
 			}
@@ -95,9 +100,7 @@ function ZiHaiDicUI(){
 			isIframeReady = false;
 		}
 		
-		return {
-			phrases:phrases
-		};
+		return {phrases: phrases};
 	}
 
 	function getIVSPhrase(param){
@@ -196,16 +199,15 @@ function ZiHaiDicUI(){
 		let isIFrameVisiable = false;
 		let mainDomWidth = "";
 
-		if(!dicMinimized){
-			dicWinHeight = bodyHeight - info1Height - parseInt(domDic["main"].css("margin-bottom")) - dicWinPadding*2;
-			dicWinWidth = bodyWidth/2;
-
+		if (!dicMinimized){
+			dicWinHeight = bodyHeight - info1Height - parseInt(domDic["main"].css("margin-bottom"));
+			dicWinWidth = bodyWidth * 0.3;
 		}
+
 		domDic["dicWin"].css({
-			height: dicWinHeight
-			, width : dicWinWidth
-			, top:mainTop-bodyMarginTop + bodyHeight - dicWinHeight - dicWinPadding*2 - info1Height
-			, left: bodyWidth - dicWinWidth - bodyPaddingLeft
+			width : dicWinWidth, height: dicWinHeight,
+			top:mainTop-bodyMarginTop + bodyHeight - dicWinHeight - dicWinPadding - info1Height,
+			left: bodyWidth - dicWinWidth - bodyPaddingLeft
 		});
 		
 		iframeWidth = domDic["dicWin"].width()- dicWinPadding*2;
@@ -217,8 +219,7 @@ function ZiHaiDicUI(){
 			} else {				
 				isIFrameVisiable = true;
 				domDic["dicResult"].show().css({
-					height: dicWinHeight-dicWinMinHeight
-					, width : iframeWidth
+					width : iframeWidth, height: dicWinHeight-dicWinMinHeight
 				});
 			}
 		} else {
@@ -230,7 +231,7 @@ function ZiHaiDicUI(){
 		}
 
 		if(!dicMinimized){
-			mainDomWidth = dicWinWidth - dicWinPadding*5;
+			mainDomWidth = bodyWidth - dicWinWidth - dicWinPadding*5;
 		}
 		domDic["main"].css({
 			width:mainDomWidth

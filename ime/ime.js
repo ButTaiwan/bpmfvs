@@ -3,6 +3,11 @@ var curr = -1;
 var vsbase = 0xe01e0;
 window.textinfo = {};
 
+String.prototype.unicharAt = function (i) {
+	if (this.charAt(i).match(/[\ud800-\udb7f]/)) return this.substr(i, 2);
+	return this.charAt(i);
+};
+
 function chr(uni) {
 	if (String.fromCodePoint) return String.fromCodePoint(uni);	// ES6
 	if (uni <= 0xffff) return String.fromCharCode(uni);
@@ -111,7 +116,8 @@ function setEditorText(t) {
 	
 	// [\ud800-\udfff] means surrogate pairs of UTF-16
 	// Here I wrote /(.|\n)/g because MS Edge doesn't support /(.)/s.
-	text = t.replace(/(.|\n)/g, "\x01$1").replace(/\x01([\ud800-\udfff])/g, "$1").split(/\x01/);
+	//text = t.replace(/(.|\n)/g, "\x01$1").replace(/\x01([\ud800-\udfff])/g, "$1").split(/\x01/);
+	text = t.replace(/(.|\n)/g, "\x01$1").replace(/\x01([\udb40\udc00-\udfff])/g, "$1").split(/\x01/);
 	textinfo = {};
 
 	var editor = $('#editor');

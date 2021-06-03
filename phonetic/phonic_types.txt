@@ -788,6 +788,7 @@
 ㄆㄚ	pa1	A
 ㄆㄚˊ	pa2	A
 ㄆㄚˋ	pa4	A
+˙ㄆㄚ	pa5	E
 ㄆㄞ	pai1	A
 ㄆㄞˊ	pai2	A
 ㄆㄞˇ	pai3	D
@@ -1049,6 +1050,7 @@
 ㄊㄚ	ta1	A
 ㄊㄚˇ	ta3	A
 ㄊㄚˋ	ta4	A
+˙ㄊㄚ	ta5	E
 ㄊㄞ	tai1	A
 ㄊㄞˊ	tai2	A
 ㄊㄞˋ	tai4	A
@@ -1065,6 +1067,7 @@
 ㄊㄠˊ	tao2	A
 ㄊㄠˇ	tao3	A
 ㄊㄠˋ	tao4	A
+˙ㄊㄠ	tao5	E
 ㄊㄜˋ	te4	A
 ㄊㄥˊ	teng2	A
 ㄊㄧ	ti1	A

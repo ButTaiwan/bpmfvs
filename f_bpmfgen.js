@@ -34,8 +34,8 @@
     },
     "vhea": {
         "version": 1.0625,
-        "ascent": 1412,
-        "descent": -124,
+        "ascent": 768,
+        "descent": -768,
         "lineGap": 0,
         "advanceHeightMax": 1024,
         "minTop": -390,
