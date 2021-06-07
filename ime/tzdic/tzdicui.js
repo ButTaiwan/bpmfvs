@@ -6,6 +6,11 @@ const tzstrCssIframe = {
 	width:"100%"
 	, height:"100%"
 };
+
+// use how many characters in the prefix of a phrase to build the dictionary index
+// Must be sync between the fn.fnDftDicHash() in Google Script "TZDicCreator.cs"
+// and the TZDicUI()->fnDftDicHash() in tzdicui.js 
+const HASH_INDEX_LENGTH = 4;
 // End CONFIG ======================================================
 
 if (typeof $ === "undefined") {
@@ -71,38 +76,22 @@ function TZDicUI(){
 			tzparam.objIframe.css(tzparam.strCssIframe);
 		}
 		if(!tzparam.fnGetHash){
-			tzparam.fnGetHash = fnDftDicHash;
+			tzparam.fnGetHash = fn.fnDftDicHash;
 		}
 		
 		// events init
 		tzparam.objInput.on('input selectionchange propertychange keydown click focus', function(event) {
 			thisObj.tzUpdateEvent({event:event});
 		});
-		tzparam.objInput.on('DOMSubtreeModified', function(event) {
-			thisObj.tzUpdateEvent({event:event});
-		});			
+		//tzparam.objInput.on('DOMSubtreeModified', function(event) {
+		//	thisObj.tzUpdateEvent({event:event});
+		//});			
 		$(document).on('mouseup', function(event) {
 			thisObj.tzUpdateEvent({event:event});
 		});	
 		
 		return tzparam;
-	};	
-	
-	/**
-	* Dictionary Index Hash function. 
-	* Must be sync between the Step1()->fnDftDicHash() in Google Script "TZDicCreator.cs"
-    * and the TZDicUI()->fnDftDicHash() in tzdicui.js 
-	*/
-	function fnDftDicHash(param){
-		let {phrase, ischinese = false} = param;
-		let hash = phrase;
-		if(!ischinese && phrase.length > 1){
-			hash = phrase[0]+phrase[1];
-		} else if (phrase.length >= 1){
-			hash = phrase[0];
-		}
-		return hash;
-	}
+	};		
 	
 	let tmrUpdateEvent = null;
 	this.tzUpdateEvent = function(dicParam){	
@@ -192,11 +181,15 @@ function TZDicUI(){
 		if(phrase.length > 0){
 			isChinese = chkChinese(phrase[0]);
 		}				
-		let hash = tzparam.fnGetHash({
+		
+		let hashInfo = tzparam.fnGetHash({
 			phrase : phrase
 			,ischinese : isChinese
 		})
-		let id = tzdicidx[hash];
+		let id = reSearchFileID({
+			searchArr:hashInfo.hashArr,
+			idxArr:tzdicidx
+		})+1;
 
 		let tmpq = {
 			q:phrase
@@ -206,6 +199,58 @@ function TZDicUI(){
 		}	
 		
 		return tmpq;
+	}
+	
+	/**
+	* Search File ID by binary search
+	* @param {any} searchArr : hashArr returned by fnGetHash(). e.g.:[31934,31070,20581,24247]
+	* @param {any} idxArr : tzdicidx[] in tzdicidx.js. e.g.: [[50,48,49,57],[19968,26681,32499,19978],...]
+	* @param {int} start : Zero based recursive search start
+	* @param {int} end : Zero based recursive search end
+	* @return {int} idxFound: the index of the item found in tzdicidx[]
+	*/
+	function reSearchFileID(param){
+		let {searchArr, idxArr, start, end} = param;
+		let idxFound;
+		if(!start){
+			start = 0;
+		}
+		if(!end){
+			end = idxArr.length; // end is larger than idx array size. due to the end should be an additional infinite max value
+		}
+		if(start == end){
+			idxFound = start;
+		} else {
+			let mid = parseInt((start+end)/2);
+			if(start == mid){
+				idxFound = start;
+			} else {
+				let midArr = idxArr[mid];
+				for(let ih=0;ih<searchArr.length; ih++){
+					if(searchArr[ih] > idxArr[mid][ih]){
+						return reSearchFileID({
+							searchArr:searchArr,
+							idxArr:idxArr,
+							start:mid, 
+							end:end
+						});
+					} else if(searchArr[ih] < idxArr[mid][ih]){
+						return reSearchFileID({
+							searchArr:searchArr,
+							idxArr:idxArr,
+							start:start, 
+							end:mid
+						});
+					} else {
+						if(ih == searchArr.length-1){
+							idxFound = mid;
+							break;
+						}
+					}
+				}
+			}
+		}
+		return idxFound;
 	}
 	
 	function GetSelectedString(objInput){
@@ -272,5 +317,52 @@ function TZDicUI(){
 		const REGEX_CHINESE = /[\u4e00-\u9fff]|[\u3400-\u4dbf]|[\u{20000}-\u{2a6df}]|[\u{2a700}-\u{2b73f}]|[\u{2b740}-\u{2b81f}]|[\u{2b820}-\u{2ceaf}]|[\uf900-\ufaff]|[\u3300-\u33ff]|[\ufe30-\ufe4f]|[\uf900-\ufaff]|[\u{2f800}-\u{2fa1f}]/u;
 		return REGEX_CHINESE.test(str);
 	}
+	
+	let fn = {
+	  /**
+	  * Dictionary Index Hash function. 
+	  * Must be sync between 
+	  *     - the Step1()->fnDftDicHash() in Google Script "TZDicCreator.cs"
+	  *     - the TZDicUI()->fnDftDicHash() in tzdicui.js 
+	  * @param {any} phrase : input string to be hash
+	  * @return {array} hashArr: output an array for progressive hash
+	  * @return {any} hash: output single hash string
+	  */
+	  fnDftDicHash : function(param){
+		let {phrase, hashlength=HASH_INDEX_LENGTH} = param;
+		let hash = "";
+		let hashArr = [];
+		for(let ip=0; ip<=hashlength;ip++){
+		  let hashcode = 0;
+		  if(ip<phrase.length){
+			hashcode = fn.getUni32(phrase[ip]);
+		  }
+		  hashArr.push(hashcode);
+		  hash += ("0000000000000000"+hashcode).slice (-16);
+		  if(ip >= hashlength-1){
+			break;
+		  }
+		}
+		
+		return{
+		  hash : hash
+		  , hashArr : hashArr
+		};
+	  },
+	  
+	  /**
+	  * Convert UTF16 character to a 32bits intenger by Unicode
+	  * @param {any} c : input UTF16 character
+	  * @return {any} a 32bits intenger
+	  */
+	  getUni32 : function(c){
+		let code1st = c.charCodeAt(0);
+		let code2nd = c.charCodeAt(1);
+		if(isNaN(code2nd)){
+		  code2nd = 0;
+		}
+		return code1st + (code2nd<<16);
+	  }
+	};
 }
 
