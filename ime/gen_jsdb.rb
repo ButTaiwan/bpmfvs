@@ -98,7 +98,21 @@ db.each { |k, v|
 	jsdb[k]['v'] = vs if flag
 }
 
+rubies = {}
+pua = 0xf001
+f = File.open('../phonetic/phonic_types.txt', 'r:utf-8')
+f.each { |s|
+	s.chomp!
+	next if s == ''
+	bpmf, py, src = s.split /\t/
+	bpmf = bpmf[1..-1] + '˙' if bpmf[0] == '˙'
+	rubies[bpmf] = pua
+	pua += 1
+}
+f.close
+
 puts "Write poyin_db.js ..."
 f = File.open('poyin_db.js', 'w:utf-8')
-f.puts 'var data = ' + JSON.pretty_generate(jsdb)
+f.puts 'var data = ' + JSON.pretty_generate(jsdb) + ';'
+f.puts 'var ruby = ' + JSON.pretty_generate(rubies) + ';'
 f.close

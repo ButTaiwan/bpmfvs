@@ -12,11 +12,11 @@ $font_url = 'https://github.com/ButTaiwan/bpmfvs'
 require 'json'
 require 'set'
 
+$adw = 1536	
+
 $pos = [
-	nil,
-	[200, 460],
-	[400, 50, 660],
-	[520, 230, -60, 780]
+#	nil, [200, 460], [400, 50, 660], [520, 230, -60, 780]
+	nil, [180, 440], [380, 30, 640], [500, 210, -80, 760]
 ]
 
 $bpmfname = {
@@ -28,8 +28,7 @@ $bpmfname = {
 	'ㄧ' => 'i', 'ㄨ' => 'u', 'ㄩ' => 'iu'
 }
 
-
-def create_bpmf_glypfs(fnt, use_src_bpmf)
+def create_bpmf_glypfs(fnt, use_src_bpmf, spmode = nil)
 	puts "Now create bpmf glyphs..."
 	$z = {}
 
@@ -38,13 +37,13 @@ def create_bpmf_glypfs(fnt, use_src_bpmf)
 		(0x3105..0x3129).each { |i| 
 			gn = 'uni' + i.to_s(16).upcase
 			$order_sym << gn
-			fnt['glyf'][gn]['advanceWidth'] = 1536
+			fnt['glyf'][gn]['advanceWidth'] = $adw
 			fnt['glyf'][gn]['advanceHeight'] = 1024
 			fnt['glyf'][gn]['verticalOrigin'] = 900
 		}
 		['uni02CA', 'uni02C7', 'uni02CB', 'uni02D9'].each { |gn| 
 			$order_sym << gn
-			fnt['glyf'][gn]['advanceWidth'] = 1536
+			fnt['glyf'][gn]['advanceWidth'] = $adw
 			fnt['glyf'][gn]['advanceHeight'] = 1024
 			fnt['glyf'][gn]['verticalOrigin'] = 900
 		}
@@ -53,7 +52,11 @@ def create_bpmf_glypfs(fnt, use_src_bpmf)
 	# add small bpmf components to glyph order
 	$bpmfname.each { |k, v| $order_zy << 'zy' + v}
 	(2..5).each { |i| $order_zy << 'tone' + i.to_s }
-		
+
+	$verts['uniF000'] = 'uniF000.vert'
+	$order_zy << 'uniF000'
+	zyv = ['uniF000.vert']
+	zyPua = 0xf001
 	f = File.open('phonetic/phonic_types.txt', 'r:utf-8')
 	f.each { |s|
 		s.chomp!
@@ -64,15 +67,24 @@ def create_bpmf_glypfs(fnt, use_src_bpmf)
 		zy = zy.gsub(/[ˊˇˋ˙]/, '')
 		len = zy.length
 		len.times { |i|
-			refs << {"glyph":"zy" + $bpmfname[zy[i]],"x":0,"y":$pos[len][i] + (py[-1] == '5' ? -60 : 0)}
+			refs << {"glyph":"zy" + $bpmfname[zy[i]],"x": (spmode != 'none' ? -512 : -668),"y":$pos[len][i] + (py[-1] == '5' ? -60 : 0)}
 		}
-		refs << {"glyph":"tone" + py[-1], "x":300,"y":$pos[len][-2]+(py[-1]=='2' ? 280 : 200) } if py[-1] =~ /[234]/
-		refs << {"glyph":"tone5", "x":0,"y":$pos[len][-1]} if py[-1] == '5'
+		refs << {"glyph":"tone" + py[-1], "x":(spmode != 'none' ? -212 : -368),"y":$pos[len][-2]+(py[-1]=='2' ? 280 : 200) } if py[-1] =~ /[234]/
+		refs << {"glyph":"tone5", "x":(spmode != 'none' ? -512 : -668),"y":$pos[len][-1]} if py[-1] == '5'
 		
-		gly = {'advanceWidth': 512, 'advanceHeight': 1024, 'verticalOrigin': 900, 'references': refs }
-		fnt['glyf']['z_' + py] = gly
-		$order_zy << 'z_' + py
+		#gly = {'advanceWidth': 512, 'advanceHeight': 1024, 'verticalOrigin': 900, 'references': refs }
+		gn = 'z_' + py
+		fnt['glyf'][gn] = {'advanceWidth': 0, 'advanceHeight': 1024, 'verticalOrigin': 900, 'references': refs }
+		$order_zy << gn
+		fnt['cmap'][zyPua] = gn
+		zyPua += 1
+
+		gvn = 'z_' + py + '.vert'
+		fnt['glyf'][gvn] = {'advanceWidth': $adw, 'advanceHeight': 1, 'verticalOrigin': -124, 'references': [{"glyph": gn, "x": $adw, "y": 0}] }
+		zyv << gvn
+		$verts[gn] = gvn
 	}
+	$order_zy += zyv
 	f.close
 end
 
@@ -91,11 +103,11 @@ def create_zhuyin_glyphs fnt
 			next if i >= 6
 			hangn = 'uni'+uniHex+'.ss00'
 			gly = {
-				'advanceWidth': 1536, 
+				'advanceWidth': $adw, 
 				'advanceHeight': 1024, 
 				'verticalOrigin': fnt['glyf'][hangn]['verticalOrigin'],
 				'references': [
-					{"glyph": "z_" + $z[zy], "x":1024, "y": 0},
+					{"glyph": "z_" + $z[zy], "x": $adw, "y": 0},
 					{"glyph": hangn, "x":0, "y": 0}
 				]}
 			
@@ -137,7 +149,7 @@ def align_pos contours, dir
 	}
 	
 	off = 0
-	off = 1136 - max if dir == 'L'
+	off = ($adw-400) - max if dir == 'L'
 	off =  400 - min if dir == 'R'
 	off =  680 - max if dir == 'B'
 	off =  100 - min if dir == 'T'
@@ -149,11 +161,11 @@ def align_pos contours, dir
 	contours
 end
 
-def shift_y contours, off
+def shift contours, off, xy = 'y'
 	return nil if contours == nil
 	contours.each_with_index { |path, i|
 		path.each_with_index { |node, j|
-			contours[i][j]['y'] += off
+			contours[i][j][xy] += off
 		}
 	}
 	contours
@@ -162,31 +174,32 @@ end
 def gen_rotate_glyph sg
 	h = sg['advanceWidth']
 	paths = []
-	return nil unless sg.has_key?('contours')
-	sg['contours'].each { |sp|
-		path = []
-		sp.each { |sn|
-			path << {'x' => sn['y'] + 124, 'y' => h-sn['x'], 'on' => sn['on']}
+	if sg.has_key?('contours')
+		sg['contours'].each { |sp|
+			path = []
+			sp.each { |sn|
+				path << {'x' => sn['y'] + 124, 'y' => h-sn['x'], 'on' => sn['on']}
+			}
+			paths << path
 		}
-		paths << path
-	}
+	end
 
 	return {
-		'advanceWidth' => 1536,
+		'advanceWidth' => $adw,
 		'advanceHeight' => h,
 		'verticalOrigin' => h,
 		'contours' => paths
 	}
 end
 
-def read_font fnt, font_file, c_family, e_family, version, use_src_bpmf, offy
+def read_font fnt, font_file, c_family, e_family, version, use_src_bpmf, offy, spmode
 	puts "Now dump font to JSON..."
 	system("#{$otfccdump} --pretty srcfonts/#{font_file} -o tmp/src_font.js")
-	
+
 	$clist = {}
 	$ccfg = {}
 	(0x20..0x7e).each { |i| $clist[sprintf('%04x', i).upcase] = false}
-	f = File.open('big5_merge.txt', 'r:utf-8')
+	f = File.open('allchars.txt', 'r:utf-8')
 	f.each { |s|
 		s.chomp!
 		s.gsub!(/\#.*$/, '')
@@ -232,6 +245,13 @@ def read_font fnt, font_file, c_family, e_family, version, use_src_bpmf, offy
 		}
 	}
 
+	# 修正寬度
+	fnt['glyf']['emptyBox']['advanceWidth'] = $adw
+	fnt['glyf']['uniF000.vert']['advanceWidth'] = $adw
+	fnt['glyf']['uniF000']['contours'] = shift(fnt['glyf']['uniF000']['contours'], -256, 'x') if spmode == 'none'
+	fnt['glyf']['uniF000.vert']['contours'] = shift(fnt['glyf']['uniF000.vert']['contours'], -768, 'x') if spmode == 'none'
+
+
 	# 開始複製來源字符
 	$clist.keys.each { |uniHex|
 		uniDec = uniHex.to_i(16).to_s
@@ -243,11 +263,13 @@ def read_font fnt, font_file, c_family, e_family, version, use_src_bpmf, offy
 		fgn = input['cmap'][uniDec]
 		fgn = src_salts[fgn] if src_salts.has_key?(fgn)
 		g = input['glyf'][fgn]
-		g['contours'] = shift_y(g['contours'], offy) if offy != 0 && g.has_key?('contours')
+		g['contours'] = shift(g['contours'], offy) if offy != 0 && g.has_key?('contours')
 		#g['instructions'] = []
 
 		if $zhuyin.has_key?(c)					# 有注音定義的漢字
-			g['advanceWidth'] = 1536
+			g['contours'] = fnt['glyf']['emptyBox']['contours'] if spmode == 'box'
+			g['contours'] = [] if spmode == 'none' || spmode == 'nonehf'
+			g['advanceWidth'] = $adw
 			g['advanceHeight'] = 1024
 			gn = 'uni' + uniHex + '.ss00'
 			fnt['glyf'][gn] = g
@@ -256,9 +278,9 @@ def read_font fnt, font_file, c_family, e_family, version, use_src_bpmf, offy
 			$sslist[0]['uni' + uniHex] = gn
 		elsif g['advanceWidth'] == 1024 || g['advanceWidth'] == 1000			# 全形符號
 			gn = 'uni' + uniHex
-			g['advanceWidth'] = 1536
+			g['advanceWidth'] = $adw
 			g['advanceHeight'] = 1024
-			g['contours'] = align_pos(g['contours'], $1) if $ccfg[uniHex] =~ /,([LRTB]),/
+			g['contours'] = align_pos(g['contours'], $1) if $ccfg[uniHex] =~ /,([LRTB]),/ && $adw > 1024
 			fnt['glyf'][gn] = g
 			fnt['cmap'][uniDec] = gn
 			$order_sym << gn
@@ -269,7 +291,8 @@ def read_font fnt, font_file, c_family, e_family, version, use_src_bpmf, offy
 			$order_sym << gn
 			
 			gv = gen_rotate_glyph(g)
-			if gv && g['advanceWidth'] < 1000 #1024
+#			if gv && g['advanceWidth'] < 1000 #1024
+			if g['advanceWidth'] < 1000 #1024
 				gvn = gn+'.vrt2'
 				fnt['glyf'][gvn] = gv
 				$vrt2s[gn] = gvn
@@ -282,10 +305,10 @@ def read_font fnt, font_file, c_family, e_family, version, use_src_bpmf, offy
 		
 		fvgn = src_verts[fgn]
 		gv = input['glyf'][fvgn]
-		gv['contours'] = shift_y(gv['contours'], offy) if offy != 0 && gv.has_key?('contours')
+		gv['contours'] = shift(gv['contours'], offy) if offy != 0 && gv.has_key?('contours')
 		#gv['instructions'] = []
 		gvn = 'uni' + uniHex + '.vert'
-		gv['advanceWidth'] = 1536
+		gv['advanceWidth'] = $adw
 		gv['advanceHeight'] = 1024
 		fnt['glyf'][gvn] = gv
 		$order_sym << gvn
@@ -302,10 +325,10 @@ def read_font fnt, font_file, c_family, e_family, version, use_src_bpmf, offy
 		c = uniDec.to_i.chr(Encoding::UTF_8)
 		fgn = input['cmap'][uniDec]
 		g = input['glyf'][fgn]
-		g['contours'] = shift_y(g['contours'], offy) if offy != 0 && g.has_key?('contours')
+		g['contours'] = shift(g['contours'], offy) if offy != 0 && g.has_key?('contours')
 
 		gn = 'uni' + uniHex
-		g['advanceWidth'] = 1536
+		g['advanceWidth'] = $adw
 		g['advanceHeight'] = 1024
 		fnt['glyf'][gn] = g
 		fnt['cmap'][uniDec] = gn
@@ -317,9 +340,9 @@ def read_font fnt, font_file, c_family, e_family, version, use_src_bpmf, offy
 		
 		fvgn = src_verts[fgn]
 		gv = input['glyf'][fvgn]
-		gv['contours'] = shift_y(gv['contours'], offy) if offy != 0 && gv.has_key?('contours')
+		gv['contours'] = shift(gv['contours'], offy) if offy != 0 && gv.has_key?('contours')
 		gvn = 'uni' + uniHex + '.vert'
-		gv['advanceWidth'] = 1536
+		gv['advanceWidth'] = $adw
 		gv['advanceHeight'] = 1024
 		fnt['glyf'][gvn] = gv
 		$order_sym << gvn
@@ -436,7 +459,7 @@ def set_font_name fnt, src_name, c_family, e_family, version
 
 end
 
-def make_font src_font, c_family, e_family, version, use_src_bpmf=false, offy=0
+def make_font src_font, c_family, e_family, version, use_src_bpmf=false, spmode = nil
 	read_zhuyin_data
 
 	data = File.read($bpmfsrc)
@@ -456,8 +479,12 @@ def make_font src_font, c_family, e_family, version, use_src_bpmf=false, offy=0
 	6.times { |i| $sslist[i] = {} }
 
 	#read_font(fnt, 'SourceHanSansTW-Regular.ttf', '音源黑體', 'Yinyuan Sans', '0.100')
-	read_font(fnt, src_font, c_family, e_family, version, use_src_bpmf, offy)
-	create_bpmf_glypfs(fnt, use_src_bpmf)
+	$adw = 1536
+	$adw = 1024 if spmode == 'none'
+	#$adw = 512 if spmode == 'nonehf'
+
+	read_font(fnt, src_font, c_family, e_family, version, use_src_bpmf, 0, spmode) # offy)
+	create_bpmf_glypfs(fnt, use_src_bpmf, spmode)
 	create_zhuyin_glyphs(fnt)
 
 	generate_gsub(fnt)
@@ -477,7 +504,7 @@ def make_font src_font, c_family, e_family, version, use_src_bpmf=false, offy=0
 	system("#{$ttx} -m tmp/otfbuild.ttf -o outputs/#{$psname}.ttf tmp/otfbuild_cmap.ttx")
 end
 
-ver = '1.200'
+ver = '1.320'
 make_font('ZihiKaiStd.ttf', 'ㄅ字嗨注音標楷', 'Bpmf Zihi KaiStd', ver, true)
 make_font('SourceHanSansTW-Bold.ttf', 'ㄅ字嗨注音黑體', 'Bpmf Zihi Sans', ver, true)
 make_font('SourceHanSansTW-ExtraLight.ttf', 'ㄅ字嗨注音黑體', 'Bpmf Zihi Sans', ver, true)
@@ -529,3 +556,6 @@ make_font('GenYoMinTW-L.ttf', 'ㄅ源樣注音明體', 'Bpmf GenYo Min', ver, tr
 make_font('GenYoMinTW-M.ttf', 'ㄅ源樣注音明體', 'Bpmf GenYo Min', ver, true)
 make_font('GenYoMinTW-R.ttf', 'ㄅ源樣注音明體', 'Bpmf GenYo Min', ver, true)
 make_font('GenYoMinTW-SB.ttf', 'ㄅ源樣注音明體', 'Bpmf GenYo Min', ver, true)
+
+make_font('GenYoMinTW-R.ttf', 'ㄅ字嗨注音而已', 'Bpmf Zihi Only', ver, false, 'none')
+make_font('GenYoMinTW-R.ttf', 'ㄅ字嗨注音加框', 'Bpmf Zihi Box', ver, false, 'box')
