@@ -556,6 +556,7 @@ make_font('GenYoMinTW-L.ttf', 'ㄅ源樣注音明體', 'Bpmf GenYo Min', ver, tr
 make_font('GenYoMinTW-M.ttf', 'ㄅ源樣注音明體', 'Bpmf GenYo Min', ver, true)
 make_font('GenYoMinTW-R.ttf', 'ㄅ源樣注音明體', 'Bpmf GenYo Min', ver, true)
 make_font('GenYoMinTW-SB.ttf', 'ㄅ源樣注音明體', 'Bpmf GenYo Min', ver, true)
+make_font('Iansui0.9-Regular.ttf', 'ㄅ注音芫荽', 'Bpmf Iansui', ver, true)
 
 make_font('GenYoMinTW-R.ttf', 'ㄅ字嗨注音而已', 'Bpmf Zihi Only', ver, false, 'none')
 make_font('GenYoMinTW-R.ttf', 'ㄅ字嗨注音加框', 'Bpmf Zihi Box', ver, false, 'box')

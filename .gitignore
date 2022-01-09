@@ -3,10 +3,11 @@ encoding/
 srcfonts/Gen*.ttf
 srcfonts/Source*.ttf
 srcfonts/jf*.ttf
+srcfonts/iansui*.ttf
 stdkai/
 releases/
 Bpmfh*
 tmp/*
 BopomofoSmall-Regular.ttf
 f_bpmfsrc.js
-test.html
+test*.html
