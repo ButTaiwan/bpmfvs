@@ -282,7 +282,7 @@ def make_tableZ
 	# 讀取上次釋出之最新版本的注音表
 	# 為了確保與舊版本的相容性，已釋出的讀音順序就不會再異動
 	# 後來新增的收錄來源若有新增讀音，都必須排在後方
-	fn = Dir.glob('versions/v*.txt').sort[-1]
+	fn = Dir.glob('versions/phonic_table_v*.txt').sort[-1]
 	f = File.open(fn, 'r:utf-8')
 	f.each { |s|
 		s.chomp!
@@ -385,6 +385,25 @@ def make_tableZ
 		end
 	}
 	f.close
+
+	# (F) 1999版一字多音審訂表 *因舊版相容考量，加在最後面
+	f = File.open('phonic_table_F.txt', 'r:utf-8')
+	f.each { |s|
+		s.chomp!
+		s.gsub!(/\s*#.*$/, '')
+		c, d, e, rs = s.split(/\t/, 4)
+		read[c] = {} unless read.has_key?(c)
+		#src[c] = 'F' unless src.has_key?(c)
+
+		hit = false
+		rs.split(/\t/).each { |t|
+			hit = read[c][t] = 500000 if !read[c].has_key?(t)
+			ptype[t] = 'F' if !ptype.has_key?(t)
+		}
+		src[c] = (src.has_key?(c) ? src[c].gsub(/F/, '')+'F' : 'F') if hit
+	}
+	f.close
+
 	
 	# 新酷音輸入法辭庫 (用來推測讀音常用順序)
 	f = File.open('source/tsi.src.txt', 'r:utf-8') 
@@ -444,10 +463,23 @@ def make_tableZ
 	}
 	
 	f = File.open('phonic_types.txt', 'w:utf-8')
+	fn = Dir.glob('versions/phonic_types_v*.txt').sort[-1]
+
+	fs = File.open(fn, 'r:utf-8')
+	fs.each { |s|
+		s.chomp!
+		f.puts s
+		k, v, t = s.split(/\t/, 4)
+		ptype[k] = nil	# 已輸出
+	}
+	fs.close
+
 	pmapobj.sort_by{|k, v| v}.each { |k, v|
+		next if !ptype[k]
 		f.puts "#{k}\t#{v}\t#{ptype[k]}"
 	}
-	f.close	
+
+	f.close
 end
 
 make_tableA

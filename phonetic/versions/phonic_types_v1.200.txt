@@ -1380,7 +1380,3 @@
 ㄗㄨㄛˊ	zuo2	A
 ㄗㄨㄛˇ	zuo3	A
 ㄗㄨㄛˋ	zuo4	A
-ㄔㄨㄚˇ	chua3	F
-ㄖㄜˊ	re2	F
-ㄖㄨㄛˊ	ruo2	F
-ㄊㄜ	te1	F
