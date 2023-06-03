@@ -504,7 +504,7 @@ def make_font src_font, c_family, e_family, version, use_src_bpmf=false, spmode 
 	system("#{$ttx} -m tmp/otfbuild.ttf -o outputs/#{$psname}.ttf tmp/otfbuild_cmap.ttx")
 end
 
-ver = '1.400'
+ver = '1.410'
 make_font('ZihiKaiStd.ttf', 'ㄅ字嗨注音標楷', 'Bpmf Zihi KaiStd', ver, true)
 make_font('SourceHanSansTW-Bold.ttf', 'ㄅ字嗨注音黑體', 'Bpmf Zihi Sans', ver, true)
 make_font('SourceHanSansTW-ExtraLight.ttf', 'ㄅ字嗨注音黑體', 'Bpmf Zihi Sans', ver, true)
@@ -556,7 +556,7 @@ make_font('GenYoMinTW-L.ttf', 'ㄅ源樣注音明體', 'Bpmf GenYo Min', ver, tr
 make_font('GenYoMinTW-M.ttf', 'ㄅ源樣注音明體', 'Bpmf GenYo Min', ver, true)
 make_font('GenYoMinTW-R.ttf', 'ㄅ源樣注音明體', 'Bpmf GenYo Min', ver, true)
 make_font('GenYoMinTW-SB.ttf', 'ㄅ源樣注音明體', 'Bpmf GenYo Min', ver, true)
-make_font('Iansui0.94-Regular.ttf', 'ㄅ注音芫荽', 'Bpmf Iansui', ver, true)
+make_font('Iansui-Regular.ttf', 'ㄅ注音芫荽', 'Bpmf Iansui', ver, true)
 
 make_font('GenYoMinTW-R.ttf', 'ㄅ字嗨注音而已', 'Bpmf Zihi Only', ver, false, 'none')
 make_font('GenYoMinTW-R.ttf', 'ㄅ字嗨注音加框', 'Bpmf Zihi Box', ver, false, 'box')
