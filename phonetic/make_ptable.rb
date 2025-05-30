@@ -277,6 +277,7 @@ end
 def make_tableZ
 	read = {}		# 讀音表
 	src = {}		# 文字收錄來源
+	srcx = {}		# 文字收錄來源
 	ptype = {}		# 讀音收錄來源
 	
 	# 讀取上次釋出之最新版本的注音表
@@ -288,11 +289,12 @@ def make_tableZ
 		s.chomp!
 		c, d, e, rs = s.split(/\t/, 4)
 		#last[c] = rs
+		src[c] = e
+		srcx[c] = e
 		read[c] = {}
 		score = 20000000
 		rs.split(/\t/).each { |t|
 			read[c][t] = score		# 給個很高的排序值確保順序不變
-			src[c] = e
 			ptype[t] = '?'			# 不明
 			score -= 100
 		}
@@ -369,20 +371,21 @@ def make_tableZ
 	}
 	f.close
 
-	# (E) 人工增補讀音（輕聲字與地名等） *先只處理常用字A範圍
+	# (E) 人工增補讀音（輕聲字與地名等） #*先只處理常用字A範圍
 	f = File.open('phonic_table_E.txt', 'r:utf-8')
 	f.each { |s|
 		s.chomp!
 		s.gsub!(/\s*#.*$/, '')
 		c, d, e, rs = s.split(/\t/, 4)
 
-		if src.has_key?(c) #&& src[c] =~ /^A/
-			read[c] = {} unless read.has_key?(c)
-			rs.split(/\t/).each { |t| 
-				read[c][t] = 0 if !read[c].has_key?(t)
-				ptype[t] = 'E' if !ptype.has_key?(t) || ptype[t] == '?'
-			}
-		end
+		#if src.has_key?(c) || c.ord > 0xffff #&& src[c] =~ /^A/
+		read[c] = {} unless read.has_key?(c)
+		src[c] = 'E' if !src.has_key?(c)
+		rs.split(/\t/).each { |t| 
+			read[c][t] = 0 if !read[c].has_key?(t)
+			ptype[t] = 'E' if !ptype.has_key?(t) || ptype[t] == '?'
+		}
+		#end
 	}
 	f.close
 
@@ -401,6 +404,7 @@ def make_tableZ
 			ptype[t] = 'F' if !ptype.has_key?(t)
 		}
 		src[c] = (src.has_key?(c) ? src[c].gsub(/F/, '')+'F' : 'F') if hit
+		src[c] += 'F' if src[c] !~ /F/ && srcx.has_key?(c) && srcx[c] =~ /F/
 	}
 	f.close
 
