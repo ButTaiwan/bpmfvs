@@ -592,6 +592,8 @@ def set_font_name fnt, src_name, c_family, e_family, version
 
     fnt['head']['fontRevision'] = version.to_f
     
+    copyright = "Copyright 2025 The Bpmf Project Authors (https://github.com/ButTaiwan/bpmfvs)"
+
     # Completely rebuild the name table (overriding old entries)
     # Note: We are strictly adding Platform ID 3 (Windows). 
     # Platform ID 1 entries are intentionally omitted.
@@ -604,6 +606,7 @@ def set_font_name fnt, src_name, c_family, e_family, version
         { 'platformID' => 3, 'encodingID' => 1, 'languageID' => 1028, 'nameID' => 17, 'nameString' => weight },
 
         # --- English (US) - Language ID 1033 ---
+        { 'platformID' => 3, 'encodingID' => 1, 'languageID' => 1033, 'nameID' =>  0, 'nameString' => copyright },
         { 'platformID' => 3, 'encodingID' => 1, 'languageID' => 1033, 'nameID' =>  1, 'nameString' => e_family_nameid1 },
         { 'platformID' => 3, 'encodingID' => 1, 'languageID' => 1033, 'nameID' =>  2, 'nameString' => weight },
         { 'platformID' => 3, 'encodingID' => 1, 'languageID' => 1033, 'nameID' =>  3, 'nameString' => identifier },
