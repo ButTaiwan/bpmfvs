@@ -712,7 +712,7 @@ def make_font src_font, c_family, e_family, version, use_src_bpmf=false, spmode 
     # system("#{$ttx} -m tmp/otfbuild.ttf -o outputs/#{$psname}.ttf tmp/otfbuild_cmap.ttx")
 end
 
-ver = '1.600'
+ver = '1.610'
 make_font('Iansui-Regular.ttf', 'ㄅ注音芫荽', 'Bpmf Iansui', ver, true)
 make_font('ZihiKaiStd.ttf', 'ㄅ字嗨注音標楷', 'Bpmf Zihi KaiStd', ver, true)
 make_font('Huninn-Regular.ttf', 'ㄅ注音粉圓', 'Bpmf Huninn', ver, true)
