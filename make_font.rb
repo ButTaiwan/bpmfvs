@@ -324,7 +324,7 @@ def read_font fnt, font_file, c_family, e_family, version, use_src_bpmf, offy, s
                 # 2. Handle Vertical Width Adjustment
                 # If we are in vertical mode and the width ($adw) has increased,
                 # we may need to shift the Ideographic Top/Bottom to stay centered.
-                if direction == 'vertical' && $adw >= 1000
+                if direction == 'vertical'
                     # Example: Shifting the 'icft' (Top) and 'idtp' (Top) 
                     # to account for the wider "side-car" space.
                     # The exact logic depends on if you want the hanzi centered or left-aligned.
