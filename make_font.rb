@@ -308,22 +308,23 @@ def read_font fnt, font_file, c_family, e_family, version, use_src_bpmf, offy, s
         scale = 1000.0 / input['head']['unitsPerEm'].to_f
         
         ['horizontal', 'vertical'].each do |direction|
-            next unless fnt['BASE'][direction]
+            next unless fnt['BASE'][direction] && fnt['BASE'][direction]['scripts']
             
-            # Access the axis-level scripts (usually 'DFLT', 'hani', etc.)
-            scripts = fnt['BASE'][direction]['scripts'] || {}
-            
-            scripts.each do |script_tag, script_data|
-                # Ensure we are looking at the right level for the baselines hash
-                # otfcc usually puts them directly under the script tag data
-                next unless script_data['baselines']
-            
+            fnt['BASE'][direction]['scripts'].each do |script_tag, data|
+                # otfcc can store these in 'baselines' OR 'baseValues' 
+                # Depending on the version and font source
+                target_hash = data['baselines'] || data['baseValues']
+                next unless target_hash
+                
+                puts "  Processing #{direction} script: #{script_tag}"
+                
+                # 2. Specifically shift vertical alignment
                 if direction == 'vertical'
-                    # Check for the specific tags you mentioned
-                    ['icft', 'idtp'].each do |tag|
-                        if script_data['baselines'].has_key?(tag)
-                            script_data['baselines'][tag] += 500
-                            puts "Updated #{tag} for #{script_tag} to #{script_data['baselines'][tag]}"
+                    ['icft', 'idtp', 'ideo'].each do |tag|
+                        if target_hash.has_key?(tag)
+                            old_val = target_hash[tag]
+                            target_hash[tag] += 500
+                            puts "    Updated #{tag}: #{old_val} -> #{target_hash[tag]}"
                         end
                     end
                 end
@@ -441,7 +442,7 @@ def read_font fnt, font_file, c_family, e_family, version, use_src_bpmf, offy, s
             # Map this for consistency (though zhuyin logic handles references manually)
             $imported_src_map[fgn] = gn 
 
-        elsif g['advanceWidth'] >= 1000
+        elsif g['advanceWidth'] == 1000
             gn = 'uni' + uniHex
             g['advanceWidth'] = $adw
             g['advanceHeight'] = 1000
