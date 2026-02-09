@@ -294,6 +294,9 @@ def read_font fnt, font_file, c_family, e_family, version, use_src_bpmf, offy, s
     fnt['OS_2']['sTypoDescender'] = input['OS_2']['sTypoDescender']
     fnt['OS_2']['sTypoLineGap']   = input['OS_2']['sTypoLineGap']
 
+    fnt['OS_2']['usWinAscent'] = input['OS_2']['usWinAscent']
+    fnt['OS_2']['usWinDescent'] = input['OS_2']['usWinDescent']
+
     # 3. Sync the Vertical Metrics (Mac)
     fnt['hhea']['ascent']  = input['hhea']['ascent']
     fnt['hhea']['descent'] = input['hhea']['descent']
