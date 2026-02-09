@@ -324,11 +324,11 @@ def read_font fnt, font_file, c_family, e_family, version, use_src_bpmf, offy, s
                 # 2. Handle Vertical Width Adjustment
                 # If we are in vertical mode and the width ($adw) has increased,
                 # we may need to shift the Ideographic Top/Bottom to stay centered.
-                if direction == 'vertical' && $adw > 1000
+                if direction == 'vertical' && $adw >= 1000
                     # Example: Shifting the 'icft' (Top) and 'idtp' (Top) 
                     # to account for the wider "side-car" space.
                     # The exact logic depends on if you want the hanzi centered or left-aligned.
-                    shift_amount = ($adw - 1000) / 2 # Adjust based on your alignment logic
+                    shift_amount = 500 # Adjust based on your alignment logic
                     
                     ['icft', 'idtp'].each do |tag|
                         if data['baselines'][tag]
@@ -689,17 +689,17 @@ def add_base_table fnt, spmode
             'defaultBaseline' => tag,
             'baselines' => {
                 'icfb' => -64,
-                'icft' => 840,
+                'icft' => 824,
                 'ideo' => -120,
-                'idtp' => 900,
+                'idtp' => 880,
                 'romn' => 0
             }
         }
         fnt['BASE']['vertical'][sc] = {
             'defaultBaseline' => tag,
             'baselines' => {
-                'icfb' => 60,
-                'icft' => 964 + (spmode != 'none' ? 500 : 0),
+                'icfb' => 56,
+                'icft' => 944 + (spmode != 'none' ? 500 : 0),
                 'ideo' => 0,
                 'idtp' => 1000 + (spmode != 'none' ? 500 : 0),
                 'romn' => 120
