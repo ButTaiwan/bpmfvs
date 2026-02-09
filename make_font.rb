@@ -47,14 +47,14 @@ def create_bpmf_glypfs(fnt, use_src_bpmf, spmode = nil)
             gn = 'uni' + i.to_s(16).upcase
             $order_sym << gn
             fnt['glyf'][gn]['advanceWidth'] = $adw
-            fnt['glyf'][gn]['advanceHeight'] = 1024
-            fnt['glyf'][gn]['verticalOrigin'] = 900
+            fnt['glyf'][gn]['advanceHeight'] = 1000
+            fnt['glyf'][gn]['verticalOrigin'] = 880
         }
         ['uni02CA', 'uni02C7', 'uni02CB', 'uni02D9'].each { |gn| 
             $order_sym << gn
             fnt['glyf'][gn]['advanceWidth'] = $adw
-            fnt['glyf'][gn]['advanceHeight'] = 1024
-            fnt['glyf'][gn]['verticalOrigin'] = 900
+            fnt['glyf'][gn]['advanceHeight'] = 1000
+            fnt['glyf'][gn]['verticalOrigin'] = 880
         }
     end
 
@@ -82,19 +82,19 @@ def create_bpmf_glypfs(fnt, use_src_bpmf, spmode = nil)
         zy = zy.gsub(/[ˊˇˋ˙]/, '')
         len = zy.length
         len.times { |i|
-            refs << { 'glyph' => "zy" + $bpmfname[zy[i]], 'x' => (spmode != 'none' ? -512 : -668), 'y' => $pos[len][i] + (py[-1] == '5' ? -60 : 0)}
+            refs << { 'glyph' => "zy" + $bpmfname[zy[i]], 'x' => (spmode != 'none' ? -500 : -668), 'y' => $pos[len][i] + (py[-1] == '5' ? -60 : 0)}
         }
         refs << { 'glyph' => "tone" + py[-1], 'x' => (spmode != 'none' ? -212 : -368), 'y' => $pos[len][-2]+(py[-1]=='2' ? 280 : 200) } if py[-1] =~ /[234]/
-        refs << { 'glyph' => "tone5", 'x' => (spmode != 'none' ? -512 : -668), 'y' => $pos[len][-1]} if py[-1] == '5'
+        refs << { 'glyph' => "tone5", 'x' => (spmode != 'none' ? -500 : -668), 'y' => $pos[len][-1]} if py[-1] == '5'
         
         gn = 'z_' + py
-        fnt['glyf'][gn] = { 'advanceWidth' => 0, 'advanceHeight' => 1024, 'verticalOrigin' => 900, 'references' => refs }
+        fnt['glyf'][gn] = { 'advanceWidth' => 0, 'advanceHeight' => 1000, 'verticalOrigin' => 880, 'references' => refs }
         $order_zy << gn
         fnt['cmap'][zyPua] = gn
         zyPua += 1
 
         gvn = 'z_' + py + '.vert'
-        fnt['glyf'][gvn] = { 'advanceWidth' => $adw, 'advanceHeight' => 1, 'verticalOrigin' => -124, 'references' => [{ 'glyph' => gn, 'x' => $adw, 'y' => 0 }] }
+        fnt['glyf'][gvn] = { 'advanceWidth' => $adw, 'advanceHeight' => 1, 'verticalOrigin' => -120, 'references' => [{ 'glyph' => gn, 'x' => $adw, 'y' => 0 }] }
         zyv << gvn
         $verts[gn] = gvn
     }
@@ -117,7 +117,7 @@ def create_zhuyin_glyphs fnt
             hangn = 'uni'+uniHex+'.ss00'
             gly = {
                 'advanceWidth' => $adw, 
-                'advanceHeight' => 1024, 
+                'advanceHeight' => 1000, 
                 'verticalOrigin' => fnt['glyf'][hangn]['verticalOrigin'],
                 'references' => [
                     { 'glyph' => "z_" + $z[zy], 'x' => $adw, 'y' => 0 },
@@ -197,7 +197,7 @@ def gen_rotate_glyph sg, input, reverse_map
     flat_contours.each { |sp|
         path = []
         sp.each { |sn|
-            path << {'x' => sn['y'] + 124, 'y' => h-sn['x'], 'on' => sn['on']}
+            path << {'x' => sn['y'] + 120, 'y' => h-sn['x'], 'on' => sn['on']}
         }
         paths << path
     }
@@ -363,8 +363,8 @@ def read_font fnt, font_file, c_family, e_family, version, use_src_bpmf, offy, s
 
     fnt['glyf']['emptyBox']['advanceWidth'] = $adw
     fnt['glyf']['uniF000.vert']['advanceWidth'] = $adw
-    fnt['glyf']['uniF000']['contours'] = shift(fnt['glyf']['uniF000']['contours'], -256, 'x') if spmode == 'none'
-    fnt['glyf']['uniF000.vert']['contours'] = shift(fnt['glyf']['uniF000.vert']['contours'], -768, 'x') if spmode == 'none'
+    fnt['glyf']['uniF000']['contours'] = shift(fnt['glyf']['uniF000']['contours'], -250, 'x') if spmode == 'none'
+    fnt['glyf']['uniF000.vert']['contours'] = shift(fnt['glyf']['uniF000.vert']['contours'], -750, 'x') if spmode == 'none'
 
     # 5. Main Glyph Loop
     $clist.keys.each { |uniHex|
@@ -384,7 +384,7 @@ def read_font fnt, font_file, c_family, e_family, version, use_src_bpmf, offy, s
             g['contours'] = fnt['glyf']['emptyBox']['contours'] if spmode == 'box'
             g['contours'] = [] if spmode == 'none' || spmode == 'nonehf'
             g['advanceWidth'] = $adw
-            g['advanceHeight'] = 1024
+            g['advanceHeight'] = 1000
             gn = 'uni' + uniHex + '.ss00'
             fnt['glyf'][gn] = g
             $order_han << gn
@@ -394,11 +394,11 @@ def read_font fnt, font_file, c_family, e_family, version, use_src_bpmf, offy, s
             # Map this for consistency (though zhuyin logic handles references manually)
             $imported_src_map[fgn] = gn 
 
-        elsif g['advanceWidth'] == 1024 || g['advanceWidth'] == 1000
+        elsif g['advanceWidth'] >= 1000
             gn = 'uni' + uniHex
             g['advanceWidth'] = $adw
-            g['advanceHeight'] = 1024
-            g['contours'] = align_pos(g['contours'], $1) if $ccfg[uniHex] =~ /,([LRTB]),/ && $adw > 1024
+            g['advanceHeight'] = 1000
+            g['contours'] = align_pos(g['contours'], $1) if $ccfg[uniHex] =~ /,([LRTB]),/ && $adw > 1000
             
             # Resolve References (in case fullwidth symbols use components)
             if g['references']
@@ -454,7 +454,7 @@ def read_font fnt, font_file, c_family, e_family, version, use_src_bpmf, offy, s
 
         gvn = 'uni' + uniHex + '.vert'
         gv['advanceWidth'] = $adw
-        gv['advanceHeight'] = 1024
+        gv['advanceHeight'] = 1000
         fnt['glyf'][gvn] = gv
         $order_sym << gvn
         $verts[gn] = gvn
@@ -475,7 +475,7 @@ def read_font fnt, font_file, c_family, e_family, version, use_src_bpmf, offy, s
 
         gn = 'uni' + uniHex
         g['advanceWidth'] = $adw
-        g['advanceHeight'] = 1024
+        g['advanceHeight'] = 1000
         
         # Resolve References
         if g['references']
@@ -500,7 +500,7 @@ def read_font fnt, font_file, c_family, e_family, version, use_src_bpmf, offy, s
 
         gvn = 'uni' + uniHex + '.vert'
         gv['advanceWidth'] = $adw
-        gv['advanceHeight'] = 1024
+        gv['advanceHeight'] = 1000
         fnt['glyf'][gvn] = gv
         $order_sym << gvn
         $verts[gn] = gvn
@@ -624,32 +624,33 @@ def set_font_name fnt, src_name, c_family, e_family, version
     fnt['name'] << { 'platformID' => 3, 'encodingID' => 1, 'languageID' => 1033, 'nameID' => 14, 'nameString' => license_url } if license_url && license_url != ''
 end
 
-def add_base_table fnt, spmode      
-    scripts = {'DFLT': 'ideo', 'hani': 'ideo', 'kana': 'ideo', 'latn': 'romn', 'cyrl': 'romn', 'grek': 'romn'}
-    fnt['BASE'] = {'horizontal' => {}, 'vertical' => {}}
-    scripts.each { |sc, tag|
-        fnt['BASE']['horizontal'][sc] = {
-            'defaultBaseline' => tag,
-            'baselines' => {
-                'icfb' => -64,
-                'icft' => 840,
-                'ideo' => -124,
-                'idtp' => 900,
-                'romn' => 0
-            }
-        }
-        fnt['BASE']['vertical'][sc] = {
-            'defaultBaseline' => tag,
-            'baselines' => {
-                'icfb' => 60,
-                'icft' => 964 + (spmode != 'none' ? 512 : 0),
-                'ideo' => 0,
-                'idtp' => 1024 + (spmode != 'none' ? 512 : 0),
-                'romn' => 120
-            }
-        }
-    }
-end
+# Don't need to add a BASE table as it should be pre-existing in the source font.
+# def add_base_table fnt, spmode      
+#     scripts = {'DFLT': 'ideo', 'hani': 'ideo', 'kana': 'ideo', 'latn': 'romn', 'cyrl': 'romn', 'grek': 'romn'}
+#     fnt['BASE'] = {'horizontal' => {}, 'vertical' => {}}
+#     scripts.each { |sc, tag|
+#         fnt['BASE']['horizontal'][sc] = {
+#             'defaultBaseline' => tag,
+#             'baselines' => {
+#                 'icfb' => -64,
+#                 'icft' => 840,
+#                 'ideo' => -124,
+#                 'idtp' => 900,
+#                 'romn' => 0
+#             }
+#         }
+#         fnt['BASE']['vertical'][sc] = {
+#             'defaultBaseline' => tag,
+#             'baselines' => {
+#                 'icfb' => 60,
+#                 'icft' => 964 + (spmode != 'none' ? 512 : 0),
+#                 'ideo' => 0,
+#                 'idtp' => 1000 + (spmode != 'none' ? 512 : 0),
+#                 'romn' => 120
+#             }
+#         }
+#     }
+# end
 
 def make_font src_font, c_family, e_family, version, use_src_bpmf=false, spmode = nil
     read_zhuyin_data
@@ -676,7 +677,7 @@ def make_font src_font, c_family, e_family, version, use_src_bpmf=false, spmode 
     6.times { |i| $sslist[i] = {} }
 
     $adw = 1536
-    $adw = 1024 if spmode == 'none'
+    $adw = 1000 if spmode == 'none'
 
     read_font(fnt, src_font, c_family, e_family, version, use_src_bpmf, 0, spmode) 
     create_bpmf_glypfs(fnt, use_src_bpmf, spmode)
@@ -717,7 +718,7 @@ end
 
 ver = '1.610'
 make_font('Iansui-Regular.ttf', 'ㄅ注音芫荽', 'Bpmf Iansui', ver, true)
-make_font('ZihiKaiStd.ttf', 'ㄅ字嗨注音標楷', 'Bpmf Zihi KaiStd', ver, true)
+make_font('ZihiKaiStd.ttf', 'ㄅ字嗨注音標楷', 'Bpmf Zihi Kai Std', ver, true)
 make_font('Huninn-Regular.ttf', 'ㄅ注音粉圓', 'Bpmf Huninn', ver, true)
 
 # make_font('SourceHanSansTW-Bold.ttf', 'ㄅ字嗨注音黑體', 'Bpmf Zihi Sans', ver, true)
