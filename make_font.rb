@@ -286,6 +286,18 @@ def read_font fnt, font_file, c_family, e_family, version, use_src_bpmf, offy, s
     data = File.read('tmp/src_font.js')
     input = JSON.parse(data)
     
+    # 1. Sync the UPM
+    fnt['head']['unitsPerEm'] = input['head']['unitsPerEm']
+
+    # 2. Sync the Vertical Metrics (Windows)
+    fnt['OS_2']['sTypoAscender']  = input['OS_2']['sTypoAscender']
+    fnt['OS_2']['sTypoDescender'] = input['OS_2']['sTypoDescender']
+    fnt['OS_2']['sTypoLineGap']   = input['OS_2']['sTypoLineGap']
+
+    # 3. Sync the Vertical Metrics (Mac)
+    fnt['hhea']['ascent']  = input['hhea']['ascent']
+    fnt['hhea']['descent'] = input['hhea']['descent']
+
     # 2. Setup Helper Maps
     # Reverse CMap: helps us find the Unicode for a raw glyph name (e.g. "gravecomb" -> "768")
     src_rev_cmap = {}
