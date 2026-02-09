@@ -304,35 +304,26 @@ def read_font fnt, font_file, c_family, e_family, version, use_src_bpmf, offy, s
     # adding a method to preserve the existing BASE table if it is present in the upstream font. 
     if input.has_key?('BASE')
         puts "Adjusting BASE table..."
-        fnt['BASE'] = Marshal.load(Marshal.dump(input['BASE'])) # Deep copy
-        
-        # Calculate scale factor (e.g., 1000.0 / 1024.0 or 1.0)
+        fnt['BASE'] = Marshal.load(Marshal.dump(input['BASE']))
         scale = 1000.0 / input['head']['unitsPerEm'].to_f
         
-        # We loop through both horizontal and vertical baseline sets
         ['horizontal', 'vertical'].each do |direction|
-            next unless fnt['BASE'][direction] && fnt['BASE'][direction]['scripts']
+            next unless fnt['BASE'][direction]
             
-            fnt['BASE'][direction]['scripts'].each do |script_tag, data|
-                # 1. Scale the baseline values
-                if data['baselines']
-                    data['baselines'].each do |tag, value|
-                        data['baselines'][tag] = (value * scale).round
-                    end
-                end
-                
-                # 2. Handle Vertical Width Adjustment
-                # If we are in vertical mode and the width ($adw) has increased,
-                # we may need to shift the Ideographic Top/Bottom to stay centered.
+            # Access the axis-level scripts (usually 'DFLT', 'hani', etc.)
+            scripts = fnt['BASE'][direction]['scripts'] || {}
+            
+            scripts.each do |script_tag, script_data|
+                # Ensure we are looking at the right level for the baselines hash
+                # otfcc usually puts them directly under the script tag data
+                next unless script_data['baselines']
+            
                 if direction == 'vertical'
-                    # Example: Shifting the 'icft' (Top) and 'idtp' (Top) 
-                    # to account for the wider "side-car" space.
-                    # The exact logic depends on if you want the hanzi centered or left-aligned.
-                    shift_amount = 500 # Adjust based on your alignment logic
-                    
+                    # Check for the specific tags you mentioned
                     ['icft', 'idtp'].each do |tag|
-                        if data['baselines'][tag]
-                            data['baselines'][tag] += shift_amount
+                        if script_data['baselines'].has_key?(tag)
+                            script_data['baselines'][tag] += 500
+                            puts "Updated #{tag} for #{script_tag} to #{script_data['baselines'][tag]}"
                         end
                     end
                 end
