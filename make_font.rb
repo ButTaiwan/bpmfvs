@@ -661,7 +661,7 @@ def make_font src_font, c_family, e_family, version, use_src_bpmf=false, spmode 
     end
     data = File.read($bpmfsrc)
     fnt = JSON.parse(data)
-    add_base_table(fnt, spmode)
+    #add_base_table(fnt, spmode)
 
     $order_sym = []
     $order_zy = []
