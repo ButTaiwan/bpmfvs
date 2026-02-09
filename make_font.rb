@@ -23,7 +23,7 @@ FileUtils.mkdir_p('tmp')
 FileUtils.mkdir_p('outputs')
 FileUtils.mkdir_p('source')
 
-$adw = 1536 
+$adw = 1500 
 
 $pos = [
     nil, [180, 440], [380, 30, 640], [500, 210, -80, 760]
@@ -84,7 +84,7 @@ def create_bpmf_glypfs(fnt, use_src_bpmf, spmode = nil)
         len.times { |i|
             refs << { 'glyph' => "zy" + $bpmfname[zy[i]], 'x' => (spmode != 'none' ? -500 : -668), 'y' => $pos[len][i] + (py[-1] == '5' ? -60 : 0)}
         }
-        refs << { 'glyph' => "tone" + py[-1], 'x' => (spmode != 'none' ? -212 : -368), 'y' => $pos[len][-2]+(py[-1]=='2' ? 280 : 200) } if py[-1] =~ /[234]/
+        refs << { 'glyph' => "tone" + py[-1], 'x' => (spmode != 'none' ? -200 : -368), 'y' => $pos[len][-2]+(py[-1]=='2' ? 280 : 200) } if py[-1] =~ /[234]/
         refs << { 'glyph' => "tone5", 'x' => (spmode != 'none' ? -500 : -668), 'y' => $pos[len][-1]} if py[-1] == '5'
         
         gn = 'z_' + py
@@ -300,6 +300,47 @@ def read_font fnt, font_file, c_family, e_family, version, use_src_bpmf, offy, s
     # 3. Sync the Vertical Metrics (Mac)
     fnt['hhea']['ascent']  = input['hhea']['ascent']
     fnt['hhea']['descent'] = input['hhea']['descent']
+
+    # adding a method to preserve the existing BASE table if it is present in the upstream font. 
+    if input.has_key?('BASE')
+        puts "Adjusting BASE table..."
+        fnt['BASE'] = Marshal.load(Marshal.dump(input['BASE'])) # Deep copy
+        
+        # Calculate scale factor (e.g., 1000.0 / 1024.0 or 1.0)
+        scale = 1000.0 / input['head']['unitsPerEm'].to_f
+        
+        # We loop through both horizontal and vertical baseline sets
+        ['horizontal', 'vertical'].each do |direction|
+            next unless fnt['BASE'][direction] && fnt['BASE'][direction]['scripts']
+            
+            fnt['BASE'][direction]['scripts'].each do |script_tag, data|
+                # 1. Scale the baseline values
+                if data['baselines']
+                    data['baselines'].each do |tag, value|
+                        data['baselines'][tag] = (value * scale).round
+                    end
+                end
+                
+                # 2. Handle Vertical Width Adjustment
+                # If we are in vertical mode and the width ($adw) has increased,
+                # we may need to shift the Ideographic Top/Bottom to stay centered.
+                if direction == 'vertical' && $adw > 1000
+                    # Example: Shifting the 'icft' (Top) and 'idtp' (Top) 
+                    # to account for the wider "side-car" space.
+                    # The exact logic depends on if you want the hanzi centered or left-aligned.
+                    shift_amount = ($adw - 1000) / 2 # Adjust based on your alignment logic
+                    
+                    ['icft', 'idtp'].each do |tag|
+                        if data['baselines'][tag]
+                            data['baselines'][tag] += shift_amount
+                        end
+                    end
+                end
+            end
+        end
+    else
+        add_base_table(fnt, spmode)
+    end
 
     # 2. Setup Helper Maps
     # Reverse CMap: helps us find the Unicode for a raw glyph name (e.g. "gravecomb" -> "768")
@@ -639,33 +680,33 @@ def set_font_name fnt, src_name, c_family, e_family, version
     fnt['name'] << { 'platformID' => 3, 'encodingID' => 1, 'languageID' => 1033, 'nameID' => 14, 'nameString' => license_url } if license_url && license_url != ''
 end
 
-# Don't need to add a BASE table as it should be pre-existing in the source font.
-# def add_base_table fnt, spmode      
-#     scripts = {'DFLT': 'ideo', 'hani': 'ideo', 'kana': 'ideo', 'latn': 'romn', 'cyrl': 'romn', 'grek': 'romn'}
-#     fnt['BASE'] = {'horizontal' => {}, 'vertical' => {}}
-#     scripts.each { |sc, tag|
-#         fnt['BASE']['horizontal'][sc] = {
-#             'defaultBaseline' => tag,
-#             'baselines' => {
-#                 'icfb' => -64,
-#                 'icft' => 840,
-#                 'ideo' => -124,
-#                 'idtp' => 900,
-#                 'romn' => 0
-#             }
-#         }
-#         fnt['BASE']['vertical'][sc] = {
-#             'defaultBaseline' => tag,
-#             'baselines' => {
-#                 'icfb' => 60,
-#                 'icft' => 964 + (spmode != 'none' ? 512 : 0),
-#                 'ideo' => 0,
-#                 'idtp' => 1000 + (spmode != 'none' ? 512 : 0),
-#                 'romn' => 120
-#             }
-#         }
-#     }
-# end
+
+def add_base_table fnt, spmode      
+    scripts = {'DFLT': 'ideo', 'hani': 'ideo', 'kana': 'ideo', 'latn': 'romn', 'cyrl': 'romn', 'grek': 'romn'}
+    fnt['BASE'] = {'horizontal' => {}, 'vertical' => {}}
+    scripts.each { |sc, tag|
+        fnt['BASE']['horizontal'][sc] = {
+            'defaultBaseline' => tag,
+            'baselines' => {
+                'icfb' => -64,
+                'icft' => 840,
+                'ideo' => -120,
+                'idtp' => 900,
+                'romn' => 0
+            }
+        }
+        fnt['BASE']['vertical'][sc] = {
+            'defaultBaseline' => tag,
+            'baselines' => {
+                'icfb' => 60,
+                'icft' => 964 + (spmode != 'none' ? 500 : 0),
+                'ideo' => 0,
+                'idtp' => 1000 + (spmode != 'none' ? 500 : 0),
+                'romn' => 120
+            }
+        }
+    }
+end
 
 def make_font src_font, c_family, e_family, version, use_src_bpmf=false, spmode = nil
     read_zhuyin_data
@@ -676,7 +717,6 @@ def make_font src_font, c_family, e_family, version, use_src_bpmf=false, spmode 
     end
     data = File.read($bpmfsrc)
     fnt = JSON.parse(data)
-    #add_base_table(fnt, spmode)
 
     $order_sym = []
     $order_zy = []
@@ -691,7 +731,7 @@ def make_font src_font, c_family, e_family, version, use_src_bpmf=false, spmode 
     $vrt2s = {}
     6.times { |i| $sslist[i] = {} }
 
-    $adw = 1536
+    $adw = 1500
     $adw = 1000 if spmode == 'none'
 
     read_font(fnt, src_font, c_family, e_family, version, use_src_bpmf, 0, spmode) 
@@ -699,6 +739,8 @@ def make_font src_font, c_family, e_family, version, use_src_bpmf=false, spmode 
     create_zhuyin_glyphs(fnt)
 
     generate_gsub(fnt)
+
+
 
     fnt['glyph_order'] = ['.notdef'] + $order_sym.sort + $order_zy + $order_han.sort
 
