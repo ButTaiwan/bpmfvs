@@ -2,6 +2,7 @@
 require 'json'
 require 'set'
 require 'fileutils'
+require 'pp'
 
 # --- CONFIGURATION & PATHS ---
 
@@ -306,7 +307,7 @@ def read_font fnt, font_file, c_family, e_family, version, use_src_bpmf, offy, s
         puts "Adjusting BASE table..."
         fnt['BASE'] = Marshal.load(Marshal.dump(input['BASE']))
 
-        puts "BASE structure: #{fnt['BASE']['vertical']['scripts'].keys}"
+        pp fnt['BASE']
 
         ['horizontal', 'vertical'].each do |direction|
             next unless fnt['BASE'][direction] && fnt['BASE'][direction]['scripts']
@@ -316,8 +317,6 @@ def read_font fnt, font_file, c_family, e_family, version, use_src_bpmf, offy, s
                 # Depending on the version and font source
                 target_hash = data['baselines'] || data['baseValues']
                 next unless target_hash
-                
-                puts "  Processing #{direction} script: #{script_tag}"
                 
                 # 2. Specifically shift vertical alignment
                 if direction == 'vertical'
