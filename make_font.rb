@@ -305,8 +305,9 @@ def read_font fnt, font_file, c_family, e_family, version, use_src_bpmf, offy, s
     if input.has_key?('BASE')
         puts "Adjusting BASE table..."
         fnt['BASE'] = Marshal.load(Marshal.dump(input['BASE']))
-        scale = 1000.0 / input['head']['unitsPerEm'].to_f
         
+        puts ""+fnt['BASE']+""
+
         ['horizontal', 'vertical'].each do |direction|
             next unless fnt['BASE'][direction] && fnt['BASE'][direction]['scripts']
             
@@ -320,7 +321,7 @@ def read_font fnt, font_file, c_family, e_family, version, use_src_bpmf, offy, s
                 
                 # 2. Specifically shift vertical alignment
                 if direction == 'vertical'
-                    ['icft', 'idtp', 'ideo'].each do |tag|
+                    ['icft', 'idtp'].each do |tag|
                         if target_hash.has_key?(tag)
                             old_val = target_hash[tag]
                             target_hash[tag] += 500
