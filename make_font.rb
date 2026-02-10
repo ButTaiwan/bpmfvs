@@ -306,27 +306,18 @@ def read_font fnt, font_file, c_family, e_family, version, use_src_bpmf, offy, s
     if input.has_key?('BASE')
         puts "Adjusting BASE table..."
         fnt['BASE'] = Marshal.load(Marshal.dump(input['BASE']))
-
-        pp fnt['BASE']
-
-        ['horizontal', 'vertical'].each do |direction|
-            next unless fnt['BASE'][direction] && fnt['BASE'][direction]['scripts']
             
-            fnt['BASE'][direction]['scripts'].each do |script_tag, data|
-                # otfcc can store these in 'baselines' OR 'baseValues' 
-                # Depending on the version and font source
-                target_hash = data['baselines'] || data['baseValues']
-                next unless target_hash
-                
-                # 2. Specifically shift vertical alignment
-                if direction == 'vertical'
-                    ['icft', 'idtp'].each do |tag|
-                        if target_hash.has_key?(tag)
-                            old_val = target_hash[tag]
-                            target_hash[tag] += 500
-                            puts "    Updated #{tag}: #{old_val} -> #{target_hash[tag]}"
-                        end
-                    end
+        # In your structure, 'data' is the script hash (like 'hani' or 'DFLT')
+        fnt['BASE']['vertical'].each do |script_tag, data|
+            # Skip if this isn't a script hash (like 'axis' metadata if it existed)
+            next unless data.is_a?(Hash) && data['baselines']
+            # Shifting icft, idtp, and ideo by 500 units to center 
+            # within the expanded $adw box.
+            ['icft', 'idtp', 'icfb'].each do |tag|
+                if data['baselines'].has_key?(tag)
+                    old_val = data['baselines'][tag]
+                    data['baselines'][tag] += 500
+                    puts "    Updated #{tag}: #{old_val} -> #{data['baselines'][tag]}"
                 end
             end
         end
