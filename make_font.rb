@@ -313,7 +313,7 @@ def read_font fnt, font_file, c_family, e_family, version, use_src_bpmf, offy, s
             next unless data.is_a?(Hash) && data['baselines']
             # Shifting icft, idtp, and ideo by 500 units to center 
             # within the expanded $adw box.
-            ['icft', 'idtp', 'icfb'].each do |tag|
+            ['icft', 'idtp'].each do |tag|
                 if data['baselines'].has_key?(tag)
                     old_val = data['baselines'][tag]
                     data['baselines'][tag] += 500
