@@ -305,8 +305,8 @@ def read_font fnt, font_file, c_family, e_family, version, use_src_bpmf, offy, s
     if input.has_key?('BASE')
         puts "Adjusting BASE table..."
         fnt['BASE'] = Marshal.load(Marshal.dump(input['BASE']))
-        
-        puts ""+fnt['BASE']+""
+
+        puts "BASE structure: #{fnt['BASE']['vertical']['scripts'].keys}"
 
         ['horizontal', 'vertical'].each do |direction|
             next unless fnt['BASE'][direction] && fnt['BASE'][direction]['scripts']
