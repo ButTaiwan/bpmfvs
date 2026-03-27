@@ -1,0 +1,105 @@
+name: Build Fonts
+
+on:
+  push:
+    branches: [ "main", "master" ]
+  pull_request:
+    branches: [ "main", "master" ]
+  workflow_dispatch: 
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+
+    # 1. Install System Tools
+    - name: Install System Dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y p7zip-full build-essential python3-pip
+        pip3 install fonttools
+
+    # 2. Build and Install OTFCC
+    - name: Build and Install otfcc
+      run: |
+        git clone https://github.com/caryll/otfcc.git
+        cd otfcc
+        ./dep/bin-linux/premake5 gmake
+        cd build/gmake
+        make config=release_x64
+        sudo cp ../../bin/release-x64/otfccdump /usr/local/bin/
+        sudo cp ../../bin/release-x64/otfccbuild /usr/local/bin/
+        
+        # Cleanup: Remove the build folder so it doesn't clutter git status
+        cd ../../..
+        rm -rf otfcc
+
+    # 3. Setup Ruby
+    - name: Set up Ruby
+      uses: ruby/setup-ruby@v1
+      with:
+        ruby-version: '3.2'
+
+    # 4. Check & Update Sources (Generic)
+    - name: Fetch Source Fonts
+      env: 
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: ruby update_sources.rb
+
+    # 5. Commit and Push (Only if the font file actually changed)
+    - name: Commit and Push Changes
+      run: |
+        # FIX: Check ONLY the srcfonts directory for changes. 
+        # This ignores the 'otfcc' folder or any other build noise.
+        if [[ -n $(git status --porcelain srcfonts/) ]]; then
+          echo "Font update detected. Committing..."
+          
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          
+          # Stage and commit
+          git add srcfonts/*.ttf
+          git commit -m "Auto-update source fonts from upstream [skip ci]"
+          git push
+        else
+          echo "No font changes detected. Skipping commit."
+        fi
+
+    # 6. Run the build script
+    - name: Run Font Build Script
+      run: ruby make_font.rb
+
+    # 7. Commit Generated Fonts to Repository
+    - name: Commit Generated Fonts
+      run: |
+        # Ensure the target directory exists
+        mkdir -p fonts
+        
+        # Copy the built fonts from outputs/ to fonts/
+        cp outputs/*.ttf fonts/
+        
+        # Check if the fonts folder has changed
+        if [[ -n $(git status --porcelain fonts/) ]]; then
+          echo "Generated fonts have changed. Committing..."
+          
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          
+          git add fonts/*.ttf
+          git commit -m "Update generated fonts [skip ci]"
+          git push
+        else
+          echo "No changes in generated fonts."
+        fi
+
+    # 8. Upload Artifacts
+    - name: Upload TTF Artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: Generated Fonts
+        path: outputs/*.ttf

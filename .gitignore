@@ -1,14 +1,10 @@
 old/
 encoding/
-srcfonts/Gen*.ttf
-srcfonts/Source*.ttf
-srcfonts/jf*.ttf
-srcfonts/Hu*.ttf
-srcfonts/iansui*.ttf
 stdkai/
 releases/
-Bpmf[hH]*
 tmp/*
 BopomofoSmall-Regular.ttf
 f_bpmfsrc.js
 test*.html
+.DS_Store
+*.glyphspackage
